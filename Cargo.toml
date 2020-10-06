@@ -1,0 +1,16 @@
+[package]
+name = "one2html"
+version = "0.1.0"
+authors = ["Markus Siemens <markus@m-siemens.de>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+askama = "0.8"
+onenote = { path = "../../OpenSource/onenote.rs" }
+itertools = "0.9.0"
+mime_guess = "2.0.3"
+once_cell = "1.4.1"
+palette = "0.5.0"
+regex = "1"
