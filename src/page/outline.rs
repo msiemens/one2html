@@ -238,6 +238,7 @@ impl<'a> Renderer<'a> {
             // See http://www.alanwood.net/demos/wingdings.html
             Some(("Wingdings", '\u{a7}')) => *list_format = &['\u{25aa}'],
             Some(("Wingdings", '\u{a8}')) => *list_format = &['\u{25fb}'],
+            Some(("Wingdings", '\u{77}')) => *list_format = &['\u{2b25}'],
 
             // See http://www.alanwood.net/demos/wingdings-2.html
             Some(("Wingdings 2", '\u{ae}')) => *list_format = &['\u{25c6}'],
