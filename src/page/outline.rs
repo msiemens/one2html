@@ -156,8 +156,14 @@ impl<'a> Renderer<'a> {
 
         match list_format {
             [FORMAT_NUMBERED_LIST, '\u{0}', ..] => {}
+            [FORMAT_NUMBERED_LIST, '\u{1}', ..] => {
+                container_style.set("list-style-type", "upper-roman".to_string())
+            }
             [FORMAT_NUMBERED_LIST, '\u{2}', ..] => {
                 container_style.set("list-style-type", "lower-roman".to_string())
+            }
+            [FORMAT_NUMBERED_LIST, '\u{3}', ..] => {
+                container_style.set("list-style-type", "upper-latin".to_string())
             }
             [FORMAT_NUMBERED_LIST, '\u{4}', ..] => {
                 container_style.set("list-style-type", "lower-latin".to_string())
