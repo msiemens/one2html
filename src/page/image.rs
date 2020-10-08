@@ -5,6 +5,15 @@ use std::fs;
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_image(&mut self, image: &Image) -> String {
+        let mut has_note_tags = false;
+
+        let mut content = String::new();
+        if let Some((markup, styles)) = self.render_note_tags(image.note_tags()) {
+            content.push_str(&format!("<div style=\"{}\">{}", styles, markup));
+
+            has_note_tags = true;
+        }
+
         if let Some(data) = image.data() {
             let filename = self.determine_image_filename(image);
             fs::write(self.output.join(filename.clone()), data).expect("failed to write image");
@@ -30,10 +39,14 @@ impl<'a> Renderer<'a> {
                 attrs.set("style", styles.to_string());
             }
 
-            return format!("<img {} />", attrs.to_string());
+            content.push_str(&format!("<img {} />", attrs.to_string()));
         }
 
-        String::new()
+        if has_note_tags {
+            content.push_str("</div>");
+        }
+
+        content
     }
 
     fn determine_image_filename(&mut self, image: &Image) -> String {

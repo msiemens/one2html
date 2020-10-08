@@ -199,7 +199,7 @@ impl<'a> Renderer<'a> {
             attrs.set("style", container_style.to_string());
         }
 
-        let class = self.gen_class();
+        let class = self.gen_class("list");
 
         if marker_style.len() > 0 {
             attrs.set("class", class.clone());

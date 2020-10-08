@@ -5,6 +5,15 @@ use std::path::PathBuf;
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_embedded_file(&mut self, file: &EmbeddedFile) -> String {
+        let mut has_note_tags = false;
+
+        let mut content = String::new();
+        if let Some((markup, styles)) = self.render_note_tags(file.note_tags()) {
+            content.push_str(&format!("<div style=\"{}\">{}", styles, markup));
+
+            has_note_tags = true;
+        }
+
         let filename = self.determine_filename(file.filename());
         fs::write(self.output.join(filename.clone()), file.data())
             .expect("failed to write embedded file");
@@ -12,10 +21,20 @@ impl<'a> Renderer<'a> {
         let file_type = Self::guess_type(file);
 
         match file_type {
-            FileType::Audio => format!("<audio controls src=\"{}\"></audio>", filename),
-            FileType::Video => format!("<video controls src=\"{}\"></video>", filename),
-            FileType::Unknown => format!("<embed src=\"{}\" />", filename),
+            FileType::Audio => {
+                content.push_str(&format!("<audio controls src=\"{}\"></audio>", filename))
+            }
+            FileType::Video => {
+                content.push_str(&format!("<video controls src=\"{}\"></video>", filename))
+            }
+            FileType::Unknown => content.push_str(&format!("<embed src=\"{}\" />", filename)),
+        };
+
+        if has_note_tags {
+            content.push_str("</div>");
         }
+
+        content
     }
 
     fn guess_type(file: &EmbeddedFile) -> FileType {

@@ -6,22 +6,25 @@ use regex::{Captures, Regex};
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_rich_text(&mut self, text: &RichText) -> String {
-        let style = text.paragraph_style();
+        let mut content = String::new();
+        let mut style = self.parse_paragraph_styles(text);
 
-        let style_str = self.render_style(text);
-        let mut content = self.parse_content(text);
+        if let Some((note_tag_html, note_tag_styles)) = self.render_note_tags(text.note_tags()) {
+            content.push_str(&note_tag_html);
+            style.extend(note_tag_styles);
+        }
+
+        content.push_str(&self.parse_content(text));
 
         if content.starts_with("http://") || content.starts_with("https://") {
             content = format!("<a href=\"{}\">{}</a>", content, content);
         }
 
-        match style.style_id() {
+        match text.paragraph_style().style_id() {
             Some(t) if !self.in_list && is_tag(t) => {
-                format!("<{} style=\"{}\">{}</{}>", t, style_str, content, t)
+                format!("<{} style=\"{}\">{}</{}>", t, style, content, t)
             }
-            _ if !style_str.is_empty() => {
-                format!("<span style=\"{}\">{}</span>", style_str, content)
-            }
+            _ if style.len() > 0 => format!("<span style=\"{}\">{}</span>", style, content),
             _ => content,
         }
     }
@@ -110,9 +113,9 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    fn render_style(&self, text: &RichText) -> String {
+    fn parse_paragraph_styles(&self, text: &RichText) -> StyleSet {
         if text.text() == "" {
-            return "".to_string();
+            return StyleSet::new();
         }
 
         let mut styles = self.parse_style(text.paragraph_style());
@@ -142,7 +145,7 @@ impl<'a> Renderer<'a> {
             _ => {}
         }
 
-        styles.to_string()
+        styles
     }
 
     fn parse_style(&self, style: &ParagraphStyling) -> StyleSet {

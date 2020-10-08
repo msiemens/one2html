@@ -4,6 +4,15 @@ use onenote::{Table, TableCell};
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_table(&mut self, table: &Table) -> String {
+        let mut has_note_tags = false;
+
+        let mut content = String::new();
+        if let Some((markup, styles)) = self.render_note_tags(image.note_tags()) {
+            content.push_str(&format!("<div style=\"{}\">{}", styles, markup));
+
+            has_note_tags = true;
+        }
+
         let mut styles = StyleSet::new();
         styles.set("border-collapse", "collapse".to_string());
 
@@ -20,12 +29,12 @@ impl<'a> Renderer<'a> {
             attributes.set("border", "1".to_string());
         }
 
-        let mut contents = format!("<table {}>", attributes.to_string());
+        content.push_str(&format!("<table {}>", attributes.to_string()));
 
         let locked_cols = calc_locked_cols(table.cols_locked(), table.cols());
 
         for row in table.contents() {
-            contents.push_str("<tr>");
+            content.push_str("<tr>");
 
             assert_eq!(row.contents().len(), table.col_widths().len());
 
@@ -43,21 +52,26 @@ impl<'a> Renderer<'a> {
                 });
 
             for (cell, width) in cells {
-                self.render_table_cell(&mut contents, cell, width);
+                self.render_table_cell(&mut content, cell, width);
             }
 
-            contents.push_str("</tr>");
+            content.push_str("</tr>");
         }
 
-        contents.push_str("</table>");
+        content.push_str("</table>");
 
-        contents
+        if has_note_tags {
+            content.push_str("</div>");
+        }
+
+        content
     }
 
     fn render_table_cell(&mut self, contents: &mut String, cell: &TableCell, width: Option<f32>) {
         let mut styles = StyleSet::new();
         styles.set("padding", "2pt".to_string());
         styles.set("vertical-align", "top".to_string());
+        styles.set("min-width", px(1.0));
 
         if let Some(width) = width {
             styles.set("width", px(width));

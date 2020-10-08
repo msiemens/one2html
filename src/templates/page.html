@@ -7,9 +7,14 @@
     * { margin: 0; font-weight: normal; }
     table, tr, td { border-color: #A3A3A3; }
     ul, ol { padding: 0; }
-    {%- for entry in global_styles %}
+    .note-tag-icon { position: relative; }
+    .note-tag-icon > svg { position: absolute; left: -38px; height: 16px; width: 16px; }
+    .icon-secondary > svg { position: absolute; fill: black; filter: drop-shadow(0 0 2px white); height: 12px; left: -42px; top: -1px; }
+    .icon-secondary > .content { position: absolute; color: black; filter: drop-shadow(0 0 2px white); font-size: 10px; color: black; left: -37px; top: -1px; user-select: none; }
+
+    {% for entry in global_styles -%}
     {{ entry.0 }} { {{ entry.1 }} }
-    {% endfor -%}
+    {% endfor %}
     </style>
 </head>
 <body>

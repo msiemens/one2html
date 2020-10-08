@@ -1,12 +1,13 @@
 use crate::section;
 use crate::utils::StyleSet;
 use onenote::{Page, PageContent};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 pub(crate) mod content;
 pub(crate) mod embedded_file;
 pub(crate) mod image;
+pub(crate) mod note_tag;
 pub(crate) mod outline;
 pub(crate) mod rich_text;
 pub(crate) mod table;
@@ -17,6 +18,7 @@ pub(crate) struct Renderer<'a> {
 
     in_list: bool,
     global_styles: HashMap<String, StyleSet>,
+    global_classes: HashSet<String>,
 }
 
 impl<'a> Renderer<'a> {
@@ -26,6 +28,7 @@ impl<'a> Renderer<'a> {
             section,
             in_list: false,
             global_styles: HashMap::new(),
+            global_classes: HashSet::new(),
         }
     }
 
@@ -68,12 +71,14 @@ impl<'a> Renderer<'a> {
         crate::templates::page::render(title_text, &content, &self.global_styles)
     }
 
-    pub(crate) fn gen_class(&self) -> String {
-        let mut i = self.global_styles.len();
+    pub(crate) fn gen_class(&mut self, prefix: &str) -> String {
+        let mut i = 0;
 
         loop {
-            let class = format!("cl-{}", i);
-            if !self.global_styles.contains_key(&class) {
+            let class = format!("{}-{}", prefix, i);
+            if !self.global_classes.contains(&class) {
+                self.global_classes.insert(class.clone());
+
                 return class;
             }
 
