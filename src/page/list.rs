@@ -91,7 +91,11 @@ impl<'a> Renderer<'a> {
         let bullet_spacing = spacing.unwrap_or(0.2);
 
         item_style.set("padding-left", px(bullet_spacing));
-        container_style.set("margin-left", px(-bullet_spacing));
+
+        if level == 0 {
+            container_style.set("position", "relative".to_string());
+            container_style.set("left", px(-bullet_spacing));
+        }
 
         if let Some(font) = list_font {
             marker_style.set("font-family", font.to_string());
