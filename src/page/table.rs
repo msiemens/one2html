@@ -1,6 +1,6 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
-use onenote::{Table, TableCell};
+use onenote::{OutlineElement, Table, TableCell};
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_table(&mut self, table: &Table) -> String {
@@ -77,9 +77,22 @@ impl<'a> Renderer<'a> {
 
         contents.push_str(&format!("<td {}>", attrs.to_string()));
 
-        contents.push_str(&self.render_list(cell.contents().iter()));
+        let cell_level = self.table_cell_level(cell.contents());
+        contents.push_str(&self.render_list(cell.contents().iter().map(|el| (el, cell_level))));
 
         contents.push_str("</td>");
+    }
+
+    fn table_cell_level(&self, elements: &[OutlineElement]) -> u8 {
+        let needs_nesting = elements
+            .iter()
+            .any(|element| self.is_list(element) || self.has_note_tag(element));
+
+        if needs_nesting {
+            1
+        } else {
+            0
+        }
     }
 }
 

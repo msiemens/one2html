@@ -7,15 +7,15 @@ const FORMAT_NUMBERED_LIST: char = '\u{fffd}';
 impl<'a> Renderer<'a> {
     pub(crate) fn render_list<'b>(
         &mut self,
-        elements: impl Iterator<Item = &'b OutlineElement>,
+        elements: impl Iterator<Item = (&'b OutlineElement, u8)>,
     ) -> String {
         let mut contents = String::new();
         let mut in_list = false;
         let mut list_end = None;
 
-        for element in elements {
+        for (element, level) in elements {
             if !in_list && self.is_list(element) {
-                let tags = self.list_tags(element);
+                let tags = self.list_tags(element, level);
                 let list_start = tags.0;
                 list_end = Some(tags.1);
 
@@ -28,7 +28,7 @@ impl<'a> Renderer<'a> {
                 in_list = false;
             }
 
-            contents.push_str(&self.render_outline_element(element));
+            contents.push_str(&self.render_outline_element(element, level));
         }
 
         if in_list {
@@ -38,7 +38,7 @@ impl<'a> Renderer<'a> {
         contents
     }
 
-    pub(crate) fn list_tags(&mut self, element: &OutlineElement) -> (String, String) {
+    pub(crate) fn list_tags(&mut self, element: &OutlineElement, level: u8) -> (String, String) {
         let list = element
             .list_contents()
             .first()
@@ -49,12 +49,12 @@ impl<'a> Renderer<'a> {
         } else {
             "ul"
         };
-        let attrs = self.list_attrs(list, element.list_spacing());
+        let attrs = self.list_attrs(list, element.list_spacing(), level);
 
         (format!("<{} {}>", tag, attrs), format!("</{}>", tag))
     }
 
-    fn list_attrs(&mut self, list: &List, spacing: Option<f32>) -> AttributeSet {
+    fn list_attrs(&mut self, list: &List, spacing: Option<f32>, level: u8) -> AttributeSet {
         let mut attrs = AttributeSet::new();
         let mut container_style = StyleSet::new();
         let mut item_style = StyleSet::new();

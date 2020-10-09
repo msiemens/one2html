@@ -103,6 +103,14 @@ impl<'a> Renderer<'a> {
         Some((markup, styles))
     }
 
+    pub(crate) fn has_note_tag(&self, element: &OutlineElement) -> bool {
+        element
+            .contents()
+            .iter()
+            .flat_map(|element| element.rich_text())
+            .any(|text| !text.note_tags().is_empty())
+    }
+
     fn note_tag_icon(
         &self,
         shape: NoteTagShape,

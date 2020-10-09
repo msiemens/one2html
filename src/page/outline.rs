@@ -4,10 +4,9 @@ use onenote::{Outline, OutlineElement, OutlineItem};
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_outline(&mut self, outline: &Outline) -> String {
+        let mut attrs = AttributeSet::new();
         let mut styles = StyleSet::new();
         let mut contents = String::new();
-
-        styles.set("margin-left", px(outline.items_level() as f32 * 0.75));
 
         if outline.is_layout_size_set_by_user() {
             if let Some(width) = outline.layout_max_width() {
@@ -30,27 +29,35 @@ impl<'a> Renderer<'a> {
         }
 
         if styles.len() > 0 {
-            contents.push_str(&format!("<div style=\"{}\">", styles.to_string()))
-        } else {
-            contents.push_str("<div>");
+            attrs.set("style", styles.to_string());
         }
 
-        contents.push_str(&self.render_outline_items(outline.items()));
+        contents.push_str(&format!("<div {}>", attrs));
+        let items_level = outline.items_level() - 1;
+        contents.push_str(&self.render_outline_items(outline.items(), items_level));
         contents.push_str("</div>");
 
         contents
     }
 
-    pub(crate) fn render_outline_items(&mut self, items: &[OutlineItem]) -> String {
-        self.render_list(flatten_outline_items(items))
+    pub(crate) fn render_outline_items(&mut self, items: &[OutlineItem], level: u8) -> String {
+        self.render_list(flatten_outline_items(items, level))
     }
 
-    pub(crate) fn render_outline_element(&mut self, element: &OutlineElement) -> String {
+    pub(crate) fn render_outline_element(&mut self, element: &OutlineElement, level: u8) -> String {
         let mut contents = String::new();
         let is_list = self.is_list(element);
 
+        let mut attrs = AttributeSet::new();
+
+        let mut styles = StyleSet::new();
+        styles.set("margin-left", px(0.75 * level as f32));
+        attrs.set("style", styles.to_string());
+
         if is_list {
-            contents.push_str("<li>");
+            contents.push_str(&format!("<li {}>", attrs));
+        } else {
+            contents.push_str(&format!("<div {}>", attrs));
         }
 
         self.in_list = is_list;
@@ -64,18 +71,19 @@ impl<'a> Renderer<'a> {
 
         self.in_list = false;
 
-        if !element.children().is_empty() {
-            let mut styles = StyleSet::new();
-            styles.set("margin-left", px(0.75));
-
-            let mut attrs = AttributeSet::new();
-            attrs.set("style", styles.to_string());
-
-            contents.push_str(&format!("<div {}>", attrs.to_string()));
-
-            contents.push_str(&self.render_outline_items(element.children()));
-
+        if !is_list {
             contents.push_str("</div>");
+        }
+
+        let children = element.children();
+
+        if !children.is_empty() {
+            let child_level = if is_list {
+                element.child_level()
+            } else {
+                level + element.child_level()
+            };
+            contents.push_str(&self.render_outline_items(children, child_level));
         }
 
         if is_list {
@@ -90,9 +98,12 @@ impl<'a> Renderer<'a> {
 
 fn flatten_outline_items<'a>(
     items: &'a [OutlineItem],
-) -> Box<dyn Iterator<Item = &'a OutlineElement> + 'a> {
+    level: u8,
+) -> Box<dyn Iterator<Item = (&'a OutlineElement, u8)> + 'a> {
     Box::new(items.iter().flat_map(move |item| match item {
-        OutlineItem::Element(element) => Box::new(Some(element).into_iter()),
-        OutlineItem::Group(group) => flatten_outline_items(group.outlines()),
+        OutlineItem::Element(element) => Box::new(Some((element, level)).into_iter()),
+        OutlineItem::Group(group) => {
+            flatten_outline_items(group.outlines(), group.child_level() + level)
+        }
     }))
 }
