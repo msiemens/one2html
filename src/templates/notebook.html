@@ -12,7 +12,7 @@
                 {%- when None -%}
             {%- endmatch -%}
         >
-            <a href="{{ section.path }}.html" target="section" title="{{ section.name }}">{{ section.name }}</a>
+            <a href="{{ section.path|urlencode }}.html" target="section" title="{{ section.name }}">{{ section.name }}</a>
         </li>
         {% endfor %}
     </ul>

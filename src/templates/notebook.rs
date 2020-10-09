@@ -20,3 +20,7 @@ pub(crate) fn render(name: &str, sections: &[Section]) -> String {
 
     template.render().expect("failed to render template")
 }
+
+mod filters {
+    pub(crate) use crate::templates::urlencode;
+}

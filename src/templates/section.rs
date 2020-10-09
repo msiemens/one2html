@@ -28,3 +28,7 @@ pub(crate) fn render(name: &str, pages: Vec<(String, String, i32)>) -> String {
 
     template.render().expect("failed to render template")
 }
+
+mod filters {
+    pub(crate) use crate::templates::urlencode;
+}

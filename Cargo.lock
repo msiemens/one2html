@@ -201,6 +201,7 @@ dependencies = [
  "once_cell",
  "onenote",
  "palette",
+ "percent-encoding",
  "regex",
 ]
 
@@ -241,6 +242,12 @@ dependencies = [
  "quote 1.0.7",
  "syn 1.0.42",
 ]
+
+[[package]]
+name = "percent-encoding"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 
 [[package]]
 name = "phf"
