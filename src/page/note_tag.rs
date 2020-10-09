@@ -1,5 +1,3 @@
-use onenote::{ActionItemStatus, ColorRef, NoteTag, NoteTagShape};
-
 use crate::page::Renderer;
 use crate::utils::StyleSet;
 use onenote::{ActionItemStatus, ColorRef, NoteTag, NoteTagShape, OutlineElement};
@@ -37,6 +35,12 @@ const ICON_PHONE: &str = include_str!("../../assets/icons/phone-line.svg");
 const ICON_QUESTION_MARK: &str = include_str!("../../assets/icons/question-mark.svg");
 const ICON_SQUARE: &str = include_str!("../../assets/icons/checkbox-blank-fill.svg");
 const ICON_STAR: &str = include_str!("../../assets/icons/star-fill.svg");
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+enum IconSize {
+    Normal,
+    Large,
+}
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_with_note_tags(
@@ -141,21 +145,45 @@ impl<'a> Renderer<'a> {
             NoteTagShape::YellowStar => {
                 style.set("fill", COLOR_YELLOW.to_string());
 
-                (Cow::from(ICON_STAR), style)
+                (
+                    Cow::from(ICON_STAR),
+                    self.icon_style(IconSize::Normal, style),
+                )
             }
             NoteTagShape::BlueFollowUpFlag => unimplemented!(),
-            NoteTagShape::QuestionMark => (Cow::from(ICON_QUESTION_MARK), style),
+            NoteTagShape::QuestionMark => (
+                Cow::from(ICON_QUESTION_MARK),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::BlueRightArrow => unimplemented!(),
-            NoteTagShape::HighPriority => (Cow::from(ICON_ERROR), style),
-            NoteTagShape::ContactInformation => (Cow::from(ICON_PHONE), style),
+            NoteTagShape::HighPriority => (
+                Cow::from(ICON_ERROR),
+                self.icon_style(IconSize::Normal, style),
+            ),
+            NoteTagShape::ContactInformation => (
+                Cow::from(ICON_PHONE),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::Meeting => unimplemented!(),
             NoteTagShape::TimeSensitive => unimplemented!(),
-            NoteTagShape::LightBulb => (Cow::from(ICON_LIGHT_BULB), style),
+            NoteTagShape::LightBulb => (
+                Cow::from(ICON_LIGHT_BULB),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::Pushpin => unimplemented!(),
-            NoteTagShape::Home => (Cow::from(ICON_HOME), style),
-            NoteTagShape::CommentBubble => (Cow::from(ICON_BUBBLE), style),
+            NoteTagShape::Home => (
+                Cow::from(ICON_HOME),
+                self.icon_style(IconSize::Normal, style),
+            ),
+            NoteTagShape::CommentBubble => (
+                Cow::from(ICON_BUBBLE),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::SmilingFace => unimplemented!(),
-            NoteTagShape::AwardRibbon => (Cow::from(ICON_AWARD), style),
+            NoteTagShape::AwardRibbon => (
+                Cow::from(ICON_AWARD),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::YellowKey => unimplemented!(),
             NoteTagShape::BlueCheckBox1 => self.icon_checkbox_with_1(status, style, COLOR_BLUE),
             NoteTagShape::BlueCircle1 => unimplemented!(),
@@ -245,7 +273,10 @@ impl<'a> Renderer<'a> {
             NoteTagShape::GreenSquare => self.icon_square(style, COLOR_GREEN),
             NoteTagShape::OrangeSquare => self.icon_square(style, COLOR_ORANGE),
             NoteTagShape::PinkSquare => self.icon_square(style, COLOR_PINK),
-            NoteTagShape::EMailMessage => (Cow::from(ICON_EMAIL), style),
+            NoteTagShape::EMailMessage => (
+                Cow::from(ICON_EMAIL),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::ClosedEnvelope => unimplemented!(),
             NoteTagShape::OpenEnvelope => unimplemented!(),
             NoteTagShape::MobilePhone => unimplemented!(),
@@ -257,25 +288,49 @@ impl<'a> Renderer<'a> {
             NoteTagShape::PersonWithExclamationMark => unimplemented!(),
             NoteTagShape::TwoPeople => unimplemented!(),
             NoteTagShape::ReminderBell => unimplemented!(),
-            NoteTagShape::Contact => (Cow::from(ICON_CONTACT), style),
+            NoteTagShape::Contact => (
+                Cow::from(ICON_CONTACT),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::RoseOnAStem => unimplemented!(),
             NoteTagShape::CalendarDateWithClock => unimplemented!(),
-            NoteTagShape::MusicalNote => (Cow::from(ICON_MUSIC), style),
-            NoteTagShape::MovieClip => (Cow::from(ICON_FILM), style),
+            NoteTagShape::MusicalNote => (
+                Cow::from(ICON_MUSIC),
+                self.icon_style(IconSize::Normal, style),
+            ),
+            NoteTagShape::MovieClip => (
+                Cow::from(ICON_FILM),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::QuotationMark => unimplemented!(),
             NoteTagShape::Globe => unimplemented!(),
-            NoteTagShape::HyperlinkGlobe => (Cow::from(ICON_LINK), style),
+            NoteTagShape::HyperlinkGlobe => (
+                Cow::from(ICON_LINK),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::Laptop => unimplemented!(),
             NoteTagShape::Plane => unimplemented!(),
             NoteTagShape::Car => unimplemented!(),
             NoteTagShape::Binoculars => unimplemented!(),
             NoteTagShape::PresentationSlide => unimplemented!(),
-            NoteTagShape::Padlock => (Cow::from(ICON_LOCK), style),
-            NoteTagShape::OpenBook => (Cow::from(ICON_BOOK), style),
+            NoteTagShape::Padlock => (
+                Cow::from(ICON_LOCK),
+                self.icon_style(IconSize::Normal, style),
+            ),
+            NoteTagShape::OpenBook => (
+                Cow::from(ICON_BOOK),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::NotebookWithClock => unimplemented!(),
-            NoteTagShape::BlankPaperWithLines => (Cow::from(ICON_PAPER), style),
+            NoteTagShape::BlankPaperWithLines => (
+                Cow::from(ICON_PAPER),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::Research => unimplemented!(),
-            NoteTagShape::Pen => (Cow::from(ICON_PEN), style),
+            NoteTagShape::Pen => (
+                Cow::from(ICON_PEN),
+                self.icon_style(IconSize::Normal, style),
+            ),
             NoteTagShape::DollarSign => unimplemented!(),
             NoteTagShape::CoinsWithAWindowBackdrop => unimplemented!(),
             NoteTagShape::ScheduledTask => unimplemented!(),
@@ -293,14 +348,17 @@ impl<'a> Renderer<'a> {
         color: &'static str,
     ) -> (Cow<'static, str>, StyleSet) {
         style.set("fill", color.to_string());
-        style.set("height", "20px".to_string());
-        style.set("width", "20px".to_string());
-        style.set("left", "-40px".to_string());
 
         if status.completed() {
-            (Cow::from(ICON_CHECKBOX_COMPLETE), style)
+            (
+                Cow::from(ICON_CHECKBOX_COMPLETE),
+                self.icon_style(IconSize::Large, style),
+            )
         } else {
-            (Cow::from(ICON_CHECKBOX_EMPTY), style)
+            (
+                Cow::from(ICON_CHECKBOX_EMPTY),
+                self.icon_style(IconSize::Large, style),
+            )
         }
     }
 
@@ -384,9 +442,7 @@ impl<'a> Renderer<'a> {
         secondary_icon: &'static str,
     ) -> (Cow<'static, str>, StyleSet) {
         style.set("fill", color.to_string());
-        style.set("height", "20px".to_string());
-        style.set("width", "20px".to_string());
-        style.set("left", "-40px".to_string());
+
         let mut content = String::new();
         content.push_str(if status.completed() {
             ICON_CHECKBOX_COMPLETE
@@ -399,7 +455,7 @@ impl<'a> Renderer<'a> {
             secondary_icon
         ));
 
-        (Cow::from(content), style)
+        (Cow::from(content), self.icon_style(IconSize::Large, style))
     }
 
     fn icon_checkmark(
@@ -408,11 +464,11 @@ impl<'a> Renderer<'a> {
         color: &'static str,
     ) -> (Cow<'static, str>, StyleSet) {
         style.set("fill", color.to_string());
-        style.set("height", "20px".to_string());
-        style.set("width", "20px".to_string());
-        style.set("left", "-40px".to_string());
 
-        (Cow::from(ICON_CHECK_MARK), style)
+        (
+            Cow::from(ICON_CHECK_MARK),
+            self.icon_style(IconSize::Large, style),
+        )
     }
 
     fn icon_circle(
@@ -422,7 +478,10 @@ impl<'a> Renderer<'a> {
     ) -> (Cow<'static, str>, StyleSet) {
         style.set("fill", color.to_string());
 
-        (Cow::from(ICON_CIRCLE), style)
+        (
+            Cow::from(ICON_CIRCLE),
+            self.icon_style(IconSize::Normal, style),
+        )
     }
 
     fn icon_square(
@@ -431,10 +490,40 @@ impl<'a> Renderer<'a> {
         color: &'static str,
     ) -> (Cow<'static, str>, StyleSet) {
         style.set("fill", color.to_string());
-        style.set("height", "20px".to_string());
-        style.set("width", "20px".to_string());
-        style.set("left", "-40px".to_string());
 
-        (Cow::from(ICON_SQUARE), style)
+        (
+            Cow::from(ICON_SQUARE),
+            self.icon_style(IconSize::Large, style),
+        )
+    }
+
+    fn icon_style(&self, size: IconSize, mut style: StyleSet) -> StyleSet {
+        match size {
+            IconSize::Normal => {
+                style.set("height", "16px".to_string());
+                style.set("width", "16px".to_string());
+            }
+            IconSize::Large => {
+                style.set("height", "20px".to_string());
+                style.set("width", "20px".to_string());
+            }
+        }
+
+        match (self.in_list, size) {
+            (false, IconSize::Normal) => {
+                style.set("left", "-23px".to_string());
+            }
+            (false, IconSize::Large) => {
+                style.set("left", "-25px".to_string());
+            }
+            (true, IconSize::Normal) => {
+                style.set("left", "-38px".to_string());
+            }
+            (true, IconSize::Large) => {
+                style.set("left", "-40px".to_string());
+            }
+        };
+
+        style
     }
 }
