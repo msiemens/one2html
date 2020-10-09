@@ -7,6 +7,7 @@ use std::path::PathBuf;
 pub(crate) mod content;
 pub(crate) mod embedded_file;
 pub(crate) mod image;
+pub(crate) mod list;
 pub(crate) mod note_tag;
 pub(crate) mod outline;
 pub(crate) mod rich_text;

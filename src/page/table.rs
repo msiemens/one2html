@@ -4,15 +4,7 @@ use onenote::{Table, TableCell};
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_table(&mut self, table: &Table) -> String {
-        let mut has_note_tags = false;
-
         let mut content = String::new();
-        if let Some((markup, styles)) = self.render_note_tags(image.note_tags()) {
-            content.push_str(&format!("<div style=\"{}\">{}", styles, markup));
-
-            has_note_tags = true;
-        }
-
         let mut styles = StyleSet::new();
         styles.set("border-collapse", "collapse".to_string());
 
@@ -60,11 +52,7 @@ impl<'a> Renderer<'a> {
 
         content.push_str("</table>");
 
-        if has_note_tags {
-            content.push_str("</div>");
-        }
-
-        content
+        self.render_with_note_tags(table.note_tags(), content)
     }
 
     fn render_table_cell(&mut self, contents: &mut String, cell: &TableCell, width: Option<f32>) {
@@ -89,21 +77,7 @@ impl<'a> Renderer<'a> {
 
         contents.push_str(&format!("<td {}>", attrs.to_string()));
 
-        let mut in_list = false;
-
-        for element in cell.contents() {
-            if !in_list && self.is_list(element) {
-                contents.push_str("<ul style=\"margin-left: 12px;\">");
-                in_list = true;
-            }
-
-            if in_list && !self.is_list(element) {
-                contents.push_str("</ul>\n");
-                in_list = false;
-            }
-
-            contents.push_str(&self.render_outline_element(element));
-        }
+        contents.push_str(&self.render_list(cell.contents().iter()));
 
         contents.push_str("</td>");
     }
