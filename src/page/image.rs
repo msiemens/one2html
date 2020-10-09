@@ -5,14 +5,7 @@ use std::fs;
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_image(&mut self, image: &Image) -> String {
-        let mut has_note_tags = false;
-
         let mut content = String::new();
-        if let Some((markup, styles)) = self.render_note_tags(image.note_tags()) {
-            content.push_str(&format!("<div style=\"{}\">{}", styles, markup));
-
-            has_note_tags = true;
-        }
 
         if let Some(data) = image.data() {
             let filename = self.determine_image_filename(image);
@@ -42,11 +35,7 @@ impl<'a> Renderer<'a> {
             content.push_str(&format!("<img {} />", attrs.to_string()));
         }
 
-        if has_note_tags {
-            content.push_str("</div>");
-        }
-
-        content
+        self.render_with_note_tags(image.note_tags(), content)
     }
 
     fn determine_image_filename(&mut self, image: &Image) -> String {

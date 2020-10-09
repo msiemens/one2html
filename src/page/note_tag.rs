@@ -2,6 +2,7 @@ use onenote::{ActionItemStatus, ColorRef, NoteTag, NoteTagShape};
 
 use crate::page::Renderer;
 use crate::utils::StyleSet;
+use onenote::{ActionItemStatus, ColorRef, NoteTag, NoteTagShape, OutlineElement};
 use std::borrow::Cow;
 
 const COLOR_BLUE: &str = "#4673b7";
@@ -38,6 +39,23 @@ const ICON_SQUARE: &str = include_str!("../../assets/icons/checkbox-blank-fill.s
 const ICON_STAR: &str = include_str!("../../assets/icons/star-fill.svg");
 
 impl<'a> Renderer<'a> {
+    pub(crate) fn render_with_note_tags(
+        &mut self,
+        note_tags: &[NoteTag],
+        content: String,
+    ) -> String {
+        if let Some((markup, styles)) = self.render_note_tags(note_tags) {
+            let mut contents = String::new();
+            contents.push_str(&format!("<div style=\"{}\">{}", styles, markup));
+            contents.push_str(&content);
+            contents.push_str("</div>");
+
+            contents
+        } else {
+            content
+        }
+    }
+
     pub(crate) fn render_note_tags(&mut self, note_tags: &[NoteTag]) -> Option<(String, StyleSet)> {
         let mut markup = String::new();
         let mut styles = StyleSet::new();
