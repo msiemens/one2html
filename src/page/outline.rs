@@ -8,6 +8,8 @@ impl<'a> Renderer<'a> {
         let mut styles = StyleSet::new();
         let mut contents = String::new();
 
+        attrs.set("class", "container-outline".to_string());
+
         if outline.is_layout_size_set_by_user() {
             if let Some(width) = outline.layout_max_width() {
                 styles.set("max-width", px(width));
@@ -49,6 +51,7 @@ impl<'a> Renderer<'a> {
         let is_list = self.is_list(element);
 
         let mut attrs = AttributeSet::new();
+        attrs.set("class", "outline-element".to_string());
 
         let mut styles = StyleSet::new();
         styles.set("margin-left", px(0.75 * level as f32));
