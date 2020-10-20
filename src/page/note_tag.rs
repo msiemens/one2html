@@ -1,6 +1,6 @@
 use crate::page::Renderer;
 use crate::utils::StyleSet;
-use onenote::{ActionItemStatus, ColorRef, NoteTag, NoteTagShape, OutlineElement};
+use onenote_parser::{ActionItemStatus, ColorRef, NoteTag, NoteTagShape, OutlineElement};
 use std::borrow::Cow;
 
 const COLOR_BLUE: &str = "#4673b7";

@@ -1,11 +1,13 @@
 use crate::page::Renderer;
 use crate::utils::{px, StyleSet};
+use color_eyre::eyre::ContextCompat;
+use color_eyre::Result;
 use once_cell::sync::Lazy;
-use onenote::{ColorRef, ParagraphAlignment, ParagraphStyling, RichText};
+use onenote_parser::{ColorRef, ParagraphAlignment, ParagraphStyling, RichText};
 use regex::{Captures, Regex};
 
 impl<'a> Renderer<'a> {
-    pub(crate) fn render_rich_text(&mut self, text: &RichText) -> String {
+    pub(crate) fn render_rich_text(&mut self, text: &RichText) -> Result<String> {
         let mut content = String::new();
         let mut style = self.parse_paragraph_styles(text);
 
@@ -14,7 +16,7 @@ impl<'a> Renderer<'a> {
             style.extend(note_tag_styles);
         }
 
-        content.push_str(&self.parse_content(text));
+        content.push_str(&self.parse_content(text)?);
 
         if content.starts_with("http://") || content.starts_with("https://") {
             content = format!("<a href=\"{}\">{}</a>", content, content);
@@ -22,25 +24,25 @@ impl<'a> Renderer<'a> {
 
         match text.paragraph_style().style_id() {
             Some(t) if !self.in_list && is_tag(t) => {
-                format!("<{} style=\"{}\">{}</{}>", t, style, content, t)
+                Ok(format!("<{} style=\"{}\">{}</{}>", t, style, content, t))
             }
-            _ if style.len() > 0 => format!("<span style=\"{}\">{}</span>", style, content),
-            _ => content,
+            _ if style.len() > 0 => Ok(format!("<span style=\"{}\">{}</span>", style, content)),
+            _ => Ok(content),
         }
     }
 
-    fn parse_content(&self, data: &RichText) -> String {
+    fn parse_content(&self, data: &RichText) -> Result<String> {
         let indices = data.text_run_indices();
         let styles = data.text_run_formatting();
 
         let mut text = data.text().to_string();
 
         if text == "" {
-            return "&nbsp;".to_string();
+            return Ok("&nbsp;".to_string());
         }
 
         if indices.is_empty() {
-            return fix_newlines(&text);
+            return Ok(fix_newlines(&text));
         }
 
         assert!(indices.len() + 1 >= styles.len());
@@ -77,15 +79,15 @@ impl<'a> Renderer<'a> {
                     let style = self.parse_style(style);
 
                     if style.len() > 0 {
-                        format!("<span style=\"{}\">{}</span>", style, text)
+                        Ok(format!("<span style=\"{}\">{}</span>", style, text))
                     } else {
-                        text
+                        Ok(text)
                     }
                 }
             })
-            .collect::<String>();
+            .collect::<Result<String>>()?;
 
-        fix_newlines(&content)
+        Ok(fix_newlines(&content))
     }
 
     fn render_hyperlink(
@@ -93,7 +95,7 @@ impl<'a> Renderer<'a> {
         text: String,
         style: &ParagraphStyling,
         in_hyperlink: bool,
-    ) -> String {
+    ) -> Result<String> {
         const HYPERLINK_MARKER: &str = "\u{fddf}HYPERLINK \"";
 
         let style = self.parse_style(style);
@@ -101,15 +103,18 @@ impl<'a> Renderer<'a> {
         if text.starts_with(HYPERLINK_MARKER) {
             let url = text
                 .strip_prefix(HYPERLINK_MARKER)
-                .expect("hyperlink has no start marker")
+                .wrap_err("Hyperlink has no start marker")?
                 .strip_suffix('"')
-                .expect("hyperlink has no end marker");
+                .wrap_err("Hyperlink has no end marker")?;
 
-            format!("<a href=\"{}\" style=\"{}\">", url, style)
+            Ok(format!("<a href=\"{}\" style=\"{}\">", url, style))
         } else if in_hyperlink {
-            text + "</a>"
+            Ok(text + "</a>")
         } else {
-            format!("<a href=\"{}\" style=\"{}\">{}</a>", text, style, text)
+            Ok(format!(
+                "<a href=\"{}\" style=\"{}\">{}</a>",
+                text, style, text
+            ))
         }
     }
 

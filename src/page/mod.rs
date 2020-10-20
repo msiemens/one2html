@@ -1,6 +1,7 @@
 use crate::section;
 use crate::utils::StyleSet;
-use onenote::{Page, PageContent};
+use color_eyre::Result;
+use onenote_parser::{Page, PageContent};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
@@ -33,7 +34,7 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    pub(crate) fn render_page(&mut self, page: &Page) -> String {
+    pub(crate) fn render_page(&mut self, page: &Page) -> Result<String> {
         let title_text = page.title_text().unwrap_or("Untitled Page");
 
         let mut content = String::new();
@@ -53,7 +54,7 @@ impl<'a> Renderer<'a> {
             let mut title_field = format!("<div class=\"title\" style=\"{}\">", styles.to_string());
 
             for outline in title.contents() {
-                title_field.push_str(&self.render_outline(outline))
+                title_field.push_str(&self.render_outline(outline)?)
             }
 
             title_field.push_str("</div>");
@@ -61,11 +62,11 @@ impl<'a> Renderer<'a> {
             content.push_str(&title_field);
         }
 
-        let page_content: String = page
+        let page_content = page
             .contents()
             .iter()
             .map(|content| self.render_page_content(content))
-            .collect();
+            .collect::<Result<String>>()?;
 
         content.push_str(&page_content);
 
@@ -87,12 +88,12 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    fn render_page_content(&mut self, content: &PageContent) -> String {
+    fn render_page_content(&mut self, content: &PageContent) -> Result<String> {
         match content {
             PageContent::Outline(outline) => self.render_outline(outline),
             PageContent::Image(image) => self.render_image(image),
             PageContent::EmbeddedFile(file) => self.render_embedded_file(file),
-            PageContent::Unknown => String::new(),
+            PageContent::Unknown => Ok(String::new()),
         }
     }
 }

@@ -2,18 +2,30 @@
 
 {% block title %}{{ name }}{% endblock %}
 
+{% macro render(section, grouped) %}
+    <li {% match section.color -%}
+        {%- when Some with (color) -%}
+        style="border-left-color: rgba({{ color.color.red }}, {{ color.color.green }}, {{ color.color.blue }}, {{ color.alpha }}); {% if _bool(grouped) %} margin-left: 20px; {% endif %}"
+        {%- when None -%}
+        {%- endmatch -%}
+    >
+        <a href="{{ section.path|encode }}.html" target="section" title="{{ section.name }}">{{ section.name }}</a>
+    </li>
+{% endmacro %}
+
 {% block content %}
 <nav>
     <ul>
-        {% for section in sections %}
-        <li {% match section.color -%}
-                {%- when Some with (color) -%}
-                    style="border-left-color: rgba({{ color.color.red }}, {{ color.color.green }}, {{ color.color.blue }}, {{ color.alpha }})"
-                {%- when None -%}
+        {% for entry in toc -%}
+            {% match entry %}
+                {%- when Toc::Section with (section) -%}
+                    {% call render(section, false) %}
+                {%- when Toc::SectionGroup with (name, entries) -%}
+                    <li>{{ name }}</li>
+                    {% for section in entries %}
+                        {% call render(section, true) %}
+                    {% endfor %}
             {%- endmatch -%}
-        >
-            <a href="{{ section.path|urlencode }}.html" target="section" title="{{ section.name }}">{{ section.name }}</a>
-        </li>
         {% endfor %}
     </ul>
 </nav>

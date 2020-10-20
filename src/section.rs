@@ -1,8 +1,8 @@
 use crate::{page, templates};
-use onenote::Section;
+use color_eyre::eyre::Result;
+use onenote_parser::Section;
 use std::cmp::min;
 use std::collections::HashSet;
-use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 
@@ -17,11 +17,7 @@ impl Renderer {
         }
     }
 
-    pub fn render(
-        &mut self,
-        section: &Section,
-        output_dir: PathBuf,
-    ) -> Result<PathBuf, Box<dyn Error>> {
+    pub fn render(&mut self, section: &Section, output_dir: PathBuf) -> Result<PathBuf> {
         let section_dir = output_dir.join(section.display_name());
 
         if !section_dir.is_dir() {
@@ -46,16 +42,14 @@ impl Renderer {
                 let output_file = section_dir.join(file_name + ".html");
 
                 let mut renderer = page::Renderer::new(section_dir.clone(), self);
-                let output = renderer.render_page(page);
+                let output = renderer.render_page(page)?;
 
-                fs::write(dbg!(&output_file), output)?;
+                fs::write(&output_file, output)?;
 
                 toc.push((
                     title,
                     output_file
-                        .components()
-                        .skip(2)
-                        .collect::<PathBuf>()
+                        .strip_prefix(&output_dir)?
                         .to_string_lossy()
                         .to_string(),
                     page.level(),
@@ -63,7 +57,7 @@ impl Renderer {
             }
         }
 
-        let toc_html = templates::section::render(section.display_name(), toc);
+        let toc_html = templates::section::render(section.display_name(), toc)?;
         let toc_file = output_dir.join(format!("{}.html", section.display_name()));
         fs::write(toc_file, toc_html)?;
 

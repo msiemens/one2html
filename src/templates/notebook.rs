@@ -1,11 +1,19 @@
 use crate::notebook::RgbColor;
 use askama::Template;
+use color_eyre::eyre::WrapErr;
+use color_eyre::Result;
 
 #[derive(Template)]
 #[template(path = "notebook.html")]
 struct NotebookTemplate<'a> {
     name: &'a str,
-    sections: &'a [Section],
+    toc: &'a [Toc],
+    _bool: fn(&bool) -> bool,
+}
+
+pub(crate) enum Toc {
+    Section(Section),
+    SectionGroup(String, Vec<Section>),
 }
 
 #[derive(Debug)]
@@ -15,12 +23,18 @@ pub(crate) struct Section {
     pub(crate) color: Option<RgbColor>,
 }
 
-pub(crate) fn render(name: &str, sections: &[Section]) -> String {
-    let template = NotebookTemplate { name, sections };
+pub(crate) fn render(name: &str, toc: &[Toc]) -> Result<String> {
+    let template = NotebookTemplate { name, toc, _bool };
 
-    template.render().expect("failed to render template")
+    template
+        .render()
+        .wrap_err("Failed to render notebook template")
+}
+
+fn _bool(b: &bool) -> bool {
+    *b
 }
 
 mod filters {
-    pub(crate) use crate::templates::urlencode;
+    pub(crate) use crate::templates::urlencode as encode;
 }

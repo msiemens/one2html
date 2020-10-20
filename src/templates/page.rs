@@ -1,5 +1,7 @@
 use crate::utils::StyleSet;
 use askama::Template;
+use color_eyre::eyre::WrapErr;
+use color_eyre::Result;
 use itertools::Itertools;
 use std::collections::HashMap;
 
@@ -15,7 +17,7 @@ pub(crate) fn render(
     name: &str,
     content: &str,
     global_styles: &HashMap<String, StyleSet>,
-) -> String {
+) -> Result<String> {
     PageTemplate {
         name,
         content,
@@ -25,5 +27,5 @@ pub(crate) fn render(
             .collect(),
     }
     .render()
-    .expect("failed to render page")
+    .wrap_err("Failed to render page template")
 }

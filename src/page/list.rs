@@ -1,6 +1,7 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
-use onenote::{ColorRef, List, OutlineElement};
+use color_eyre::Result;
+use onenote_parser::{ColorRef, List, OutlineElement};
 
 const FORMAT_NUMBERED_LIST: char = '\u{fffd}';
 
@@ -8,7 +9,7 @@ impl<'a> Renderer<'a> {
     pub(crate) fn render_list<'b>(
         &mut self,
         elements: impl Iterator<Item = (&'b OutlineElement, u8)>,
-    ) -> String {
+    ) -> Result<String> {
         let mut contents = String::new();
         let mut in_list = false;
         let mut list_end = None;
@@ -24,18 +25,18 @@ impl<'a> Renderer<'a> {
             }
 
             if in_list && !self.is_list(element) {
-                contents.push_str(&list_end.clone().expect("no list end tag defined"));
+                contents.push_str(&list_end.take().expect("no list end tag defined"));
                 in_list = false;
             }
 
-            contents.push_str(&self.render_outline_element(element, level));
+            contents.push_str(&self.render_outline_element(element, level)?);
         }
 
         if in_list {
             contents.push_str(&list_end.expect("no list end tag defined"));
         }
 
-        contents
+        Ok(contents)
     }
 
     pub(crate) fn list_tags(&mut self, element: &OutlineElement, level: u8) -> (String, String) {

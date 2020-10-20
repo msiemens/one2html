@@ -1,9 +1,10 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
-use onenote::{OutlineElement, Table, TableCell};
+use color_eyre::Result;
+use onenote_parser::{OutlineElement, Table, TableCell};
 
 impl<'a> Renderer<'a> {
-    pub(crate) fn render_table(&mut self, table: &Table) -> String {
+    pub(crate) fn render_table(&mut self, table: &Table) -> Result<String> {
         let mut content = String::new();
         let mut styles = StyleSet::new();
         styles.set("border-collapse", "collapse".to_string());
@@ -25,15 +26,19 @@ impl<'a> Renderer<'a> {
 
         let locked_cols = calc_locked_cols(table.cols_locked(), table.cols());
 
+        let mut col_widths = table.col_widths().to_vec();
+        col_widths.extend(vec![0.0; table.cols() as usize - col_widths.len()].into_iter());
+        let col_widths = &*col_widths;
+
         for row in table.contents() {
             content.push_str("<tr>");
 
-            assert_eq!(row.contents().len(), table.col_widths().len());
+            assert_eq!(row.contents().len(), col_widths.len());
 
             let cells = row
                 .contents()
                 .iter()
-                .zip(table.col_widths().iter().copied())
+                .zip(col_widths.iter().copied())
                 .zip(locked_cols.iter().copied())
                 .map(|((cell, width), locked)| {
                     if locked {
@@ -44,7 +49,7 @@ impl<'a> Renderer<'a> {
                 });
 
             for (cell, width) in cells {
-                self.render_table_cell(&mut content, cell, width);
+                self.render_table_cell(&mut content, cell, width)?;
             }
 
             content.push_str("</tr>");
@@ -52,10 +57,15 @@ impl<'a> Renderer<'a> {
 
         content.push_str("</table>");
 
-        self.render_with_note_tags(table.note_tags(), content)
+        Ok(self.render_with_note_tags(table.note_tags(), content))
     }
 
-    fn render_table_cell(&mut self, contents: &mut String, cell: &TableCell, width: Option<f32>) {
+    fn render_table_cell(
+        &mut self,
+        contents: &mut String,
+        cell: &TableCell,
+        width: Option<f32>,
+    ) -> Result<()> {
         let mut styles = StyleSet::new();
         styles.set("padding", "2pt".to_string());
         styles.set("vertical-align", "top".to_string());
@@ -78,9 +88,11 @@ impl<'a> Renderer<'a> {
         contents.push_str(&format!("<td {}>", attrs.to_string()));
 
         let cell_level = self.table_cell_level(cell.contents());
-        contents.push_str(&self.render_list(cell.contents().iter().map(|el| (el, cell_level))));
+        contents.push_str(&self.render_list(cell.contents().iter().map(|el| (el, cell_level)))?);
 
         contents.push_str("</td>");
+
+        Ok(())
     }
 
     fn table_cell_level(&self, elements: &[OutlineElement]) -> u8 {

@@ -1,9 +1,10 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
-use onenote::{Outline, OutlineElement, OutlineItem};
+use color_eyre::Result;
+use onenote_parser::{Outline, OutlineElement, OutlineItem};
 
 impl<'a> Renderer<'a> {
-    pub(crate) fn render_outline(&mut self, outline: &Outline) -> String {
+    pub(crate) fn render_outline(&mut self, outline: &Outline) -> Result<String> {
         let mut attrs = AttributeSet::new();
         let mut styles = StyleSet::new();
         let mut contents = String::new();
@@ -38,17 +39,25 @@ impl<'a> Renderer<'a> {
 
         contents.push_str(&format!("<div {}>", attrs));
         let items_level = outline.items_level() - 1;
-        contents.push_str(&self.render_outline_items(outline.items(), items_level));
+        contents.push_str(&self.render_outline_items(outline.items(), items_level)?);
         contents.push_str("</div>");
 
-        contents
+        Ok(contents)
     }
 
-    pub(crate) fn render_outline_items(&mut self, items: &[OutlineItem], level: u8) -> String {
+    pub(crate) fn render_outline_items(
+        &mut self,
+        items: &[OutlineItem],
+        level: u8,
+    ) -> Result<String> {
         self.render_list(flatten_outline_items(items, level))
     }
 
-    pub(crate) fn render_outline_element(&mut self, element: &OutlineElement, level: u8) -> String {
+    pub(crate) fn render_outline_element(
+        &mut self,
+        element: &OutlineElement,
+        level: u8,
+    ) -> Result<String> {
         let mut contents = String::new();
         let is_list = self.is_list(element);
 
@@ -71,7 +80,9 @@ impl<'a> Renderer<'a> {
             element
                 .contents()
                 .iter()
-                .map(|content| self.render_content(content)),
+                .map(|content| self.render_content(content))
+                .collect::<Result<Vec<_>, _>>()?
+                .into_iter(),
         );
 
         self.in_list = false;
@@ -88,7 +99,7 @@ impl<'a> Renderer<'a> {
             } else {
                 level + element.child_level()
             };
-            contents.push_str(&self.render_outline_items(children, child_level));
+            contents.push_str(&self.render_outline_items(children, child_level)?);
         }
 
         if is_list {
@@ -97,7 +108,7 @@ impl<'a> Renderer<'a> {
 
         contents.push('\n');
 
-        contents
+        Ok(contents)
     }
 }
 

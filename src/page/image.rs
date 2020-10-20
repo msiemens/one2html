@@ -1,15 +1,18 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
-use onenote::Image;
+use color_eyre::eyre::WrapErr;
+use color_eyre::Result;
+use onenote_parser::Image;
 use std::fs;
 
 impl<'a> Renderer<'a> {
-    pub(crate) fn render_image(&mut self, image: &Image) -> String {
+    pub(crate) fn render_image(&mut self, image: &Image) -> Result<String> {
         let mut content = String::new();
 
         if let Some(data) = image.data() {
-            let filename = self.determine_image_filename(image);
-            fs::write(self.output.join(filename.clone()), data).expect("failed to write image");
+            let filename = self.determine_image_filename(image)?;
+            fs::write(self.output.join(filename.clone()), data)
+                .wrap_err("Failed to write image")?;
 
             let mut attrs = AttributeSet::new();
             let mut styles = StyleSet::new();
@@ -35,10 +38,10 @@ impl<'a> Renderer<'a> {
             content.push_str(&format!("<img {} />", attrs.to_string()));
         }
 
-        self.render_with_note_tags(image.note_tags(), content)
+        Ok(self.render_with_note_tags(image.note_tags(), content))
     }
 
-    fn determine_image_filename(&mut self, image: &Image) -> String {
+    fn determine_image_filename(&mut self, image: &Image) -> Result<String> {
         if let Some(name) = image.image_filename() {
             return self.determine_filename(name);
         }
@@ -52,7 +55,7 @@ impl<'a> Renderer<'a> {
                 if !self.section.files.contains(&filename) {
                     self.section.files.insert(filename.clone());
 
-                    return filename;
+                    return Ok(filename);
                 }
 
                 i += 1;

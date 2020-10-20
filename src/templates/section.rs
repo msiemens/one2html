@@ -1,4 +1,6 @@
 use askama::Template;
+use color_eyre::eyre::WrapErr;
+use color_eyre::Result;
 
 #[derive(Template)]
 #[template(path = "section.html")]
@@ -13,7 +15,7 @@ struct Page<'a> {
     level: i32,
 }
 
-pub(crate) fn render(name: &str, pages: Vec<(String, String, i32)>) -> String {
+pub(crate) fn render(name: &str, pages: Vec<(String, String, i32)>) -> Result<String> {
     let template = NotebookTemplate {
         name,
         pages: pages
@@ -26,9 +28,11 @@ pub(crate) fn render(name: &str, pages: Vec<(String, String, i32)>) -> String {
             .collect(),
     };
 
-    template.render().expect("failed to render template")
+    template
+        .render()
+        .wrap_err("Failed to render section template")
 }
 
 mod filters {
-    pub(crate) use crate::templates::urlencode;
+    pub(crate) use crate::templates::urlencode as encode;
 }

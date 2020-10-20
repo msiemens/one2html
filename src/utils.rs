@@ -1,7 +1,23 @@
+use console::style;
+use indicatif::ProgressBar;
 use itertools::Itertools;
 use std::collections::HashMap;
 use std::fmt;
 use std::fmt::Display;
+
+pub(crate) fn with_progress<T, F: FnMut() -> T>(msg: &str, mut f: F) -> T {
+    // let bar = ProgressBar::new_spinner();
+    // bar.set_message(msg);
+    // bar.enable_steady_tick(16);
+
+    let ret = f();
+
+    // bar.finish_and_clear();
+
+    println!("{} {}", msg, style("done").green().bright().bold(),);
+
+    ret
+}
 
 pub(crate) fn px(inches: f32) -> String {
     format!("{}px", (inches * 48.0).round())
