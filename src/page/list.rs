@@ -1,7 +1,8 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
 use color_eyre::Result;
-use onenote_parser::{ColorRef, List, OutlineElement};
+use onenote_parser::contents::{List, OutlineElement};
+use onenote_parser::property::common::ColorRef;
 
 const FORMAT_NUMBERED_LIST: char = '\u{fffd}';
 

@@ -1,7 +1,7 @@
 use crate::section;
 use crate::utils::StyleSet;
 use color_eyre::Result;
-use onenote_parser::{Page, PageContent};
+use onenote_parser::page::{Page, PageContent};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 

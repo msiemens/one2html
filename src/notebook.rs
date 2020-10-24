@@ -1,11 +1,13 @@
 use crate::templates::notebook::Toc;
 use crate::{section, templates};
 use color_eyre::eyre::{eyre, Result};
-use onenote_parser::{Color, Notebook, NotebookEntry, Section};
+use onenote_parser::notebook::Notebook;
+use onenote_parser::property::common::Color;
+use onenote_parser::section::{Section, SectionEntry};
 use palette::rgb::Rgb;
 use palette::{Alpha, ConvertFrom, Hsl, Saturate, Shade, Srgb};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 pub(crate) type RgbColor = Alpha<Rgb<palette::encoding::Srgb, u8>, f32>;
 
@@ -31,14 +33,14 @@ impl Renderer {
 
         for entry in notebook.entries() {
             match entry {
-                NotebookEntry::Section(section) => {
+                SectionEntry::Section(section) => {
                     toc.push(Toc::Section(self.render_section(
                         section,
                         &notebook_dir,
                         output_dir,
                     )?));
                 }
-                NotebookEntry::SectionGroup(group) => {
+                SectionEntry::SectionGroup(group) => {
                     let group_dir = dbg!(notebook_dir.join(group.display_name()));
                     if !group_dir.is_dir() {
                         fs::create_dir(&group_dir)?;
@@ -47,7 +49,7 @@ impl Renderer {
                     let mut entries = Vec::new();
 
                     for entry in group.entries() {
-                        if let NotebookEntry::Section(section) = entry {
+                        if let SectionEntry::Section(section) = entry {
                             entries.push(self.render_section(section, &group_dir, &output_dir)?);
                         } else {
                             return Err(eyre!("Nested section groups are not yet supported"));

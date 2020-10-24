@@ -3,7 +3,9 @@ use crate::utils::{px, StyleSet};
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Result;
 use once_cell::sync::Lazy;
-use onenote_parser::{ColorRef, ParagraphAlignment, ParagraphStyling, RichText};
+use onenote_parser::contents::RichText;
+use onenote_parser::property::common::ColorRef;
+use onenote_parser::property::rich_text::{ParagraphAlignment, ParagraphStyling};
 use regex::{Captures, Regex};
 
 impl<'a> Renderer<'a> {
@@ -230,10 +232,7 @@ impl<'a> Renderer<'a> {
 }
 
 fn is_tag(tag: &str) -> bool {
-    match tag {
-        "PageDateTime" | "PageTitle" => false,
-        _ => true,
-    }
+    !matches!(tag, "PageDateTime" | "PageTitle")
 }
 
 fn fix_newlines(text: &str) -> String {

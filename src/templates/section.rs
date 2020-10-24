@@ -34,5 +34,5 @@ pub(crate) fn render(name: &str, pages: Vec<(String, String, i32)>) -> Result<St
 }
 
 mod filters {
-    pub(crate) use crate::templates::urlencode as encode;
+    pub(crate) use crate::templates::url_encode as encode;
 }

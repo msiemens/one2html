@@ -1,7 +1,8 @@
 use crate::page::Renderer;
 use color_eyre::eyre::{ContextCompat, WrapErr};
 use color_eyre::Result;
-use onenote_parser::{EmbeddedFile, FileType};
+use onenote_parser::contents::EmbeddedFile;
+use onenote_parser::property::embedded_file::FileType;
 use std::fs;
 use std::path::PathBuf;
 

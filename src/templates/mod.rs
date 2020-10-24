@@ -7,6 +7,6 @@ pub(crate) mod section;
 
 const ASCII_SET: AsciiSet = percent_encoding::NON_ALPHANUMERIC.remove(path::MAIN_SEPARATOR as u8);
 
-pub(crate) fn urlencode(str: &str) -> ::askama::Result<String> {
+pub(crate) fn url_encode(str: &str) -> ::askama::Result<String> {
     Ok(percent_encoding::utf8_percent_encode(&str, &ASCII_SET).to_string())
 }

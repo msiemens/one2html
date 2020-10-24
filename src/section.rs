@@ -1,6 +1,6 @@
 use crate::{page, templates};
 use color_eyre::eyre::Result;
-use onenote_parser::Section;
+use onenote_parser::section::Section;
 use std::cmp::min;
 use std::collections::HashSet;
 use std::fs;

@@ -6,13 +6,13 @@ use std::fmt;
 use std::fmt::Display;
 
 pub(crate) fn with_progress<T, F: FnMut() -> T>(msg: &str, mut f: F) -> T {
-    // let bar = ProgressBar::new_spinner();
-    // bar.set_message(msg);
-    // bar.enable_steady_tick(16);
+    let bar = ProgressBar::new_spinner();
+    bar.set_message(msg);
+    bar.enable_steady_tick(16);
 
     let ret = f();
 
-    // bar.finish_and_clear();
+    bar.finish_and_clear();
 
     println!("{} {}", msg, style("done").green().bright().bold(),);
 
@@ -32,14 +32,6 @@ impl AttributeSet {
 
     pub(crate) fn set(&mut self, attribute: &'static str, value: String) {
         self.0.insert(attribute, value);
-    }
-
-    pub(crate) fn extend(&mut self, other: Self) {
-        self.0.extend(other.0.into_iter())
-    }
-
-    pub(crate) fn len(&self) -> usize {
-        self.0.len()
     }
 }
 

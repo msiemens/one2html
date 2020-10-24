@@ -1,7 +1,7 @@
 use crate::page::Renderer;
 use color_eyre::Result;
 use console::style;
-use onenote_parser::Content;
+use onenote_parser::contents::Content;
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_content(&mut self, content: &Content) -> Result<String> {

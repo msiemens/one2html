@@ -1,7 +1,7 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
 use color_eyre::Result;
-use onenote_parser::{OutlineElement, Table, TableCell};
+use onenote_parser::contents::{OutlineElement, Table, TableCell};
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_table(&mut self, table: &Table) -> Result<String> {

@@ -19,7 +19,7 @@ fn main() {
         eprintln!("{:?}", e);
 
         if let Some(bt) = e
-            .downcast_ref::<onenote_parser::Error>()
+            .downcast_ref::<onenote_parser::errors::Error>()
             .and_then(std::error::Error::backtrace)
         {
             eprintln!();
