@@ -61,10 +61,12 @@ one2html -i 'Notebook/Open Notebook.onetoc2' -o ./output_dir/
 
 ## Limitations
 
-Due to limitations of the [OneNote parser](https://github.com/msiemens/onenote.rs)
-only files downloaded from OneDrive are supported. This means you can't
-convert files created by the OneNote 2016 desktop application using
-this tool.
+- Due to limitations of the [OneNote parser](https://github.com/msiemens/onenote.rs)
+  only files downloaded from OneDrive are supported. This means you can't
+  convert files created by the OneNote 2016 desktop application using
+  this tool.
+- Ink drawings are not supported at the moment.
+- Math formulas are not rendered properly at the moment.
 
 ## Disclaimer
 
