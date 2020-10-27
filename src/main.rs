@@ -1,13 +1,16 @@
 #![feature(backtrace)]
 
+use crate::cli::Opt;
 use crate::utils::with_progress;
 use color_eyre::eyre::Result;
 use color_eyre::eyre::{eyre, ContextCompat};
+use console::style;
 use onenote_parser::Parser;
-use std::env;
-use std::path::PathBuf;
+use std::path::Path;
 use std::process::exit;
+use structopt::StructOpt;
 
+mod cli;
 mod notebook;
 mod page;
 mod section;
@@ -32,29 +35,47 @@ fn main() {
 }
 
 fn _main() -> Result<()> {
+    let opt: Opt = Opt::from_args();
+
     color_eyre::install()?;
 
-    let path = env::args()
-        .nth(1)
-        .expect("usage: parse <file> <output dir>");
-    let path = PathBuf::from(path);
-
-    let output_dir = env::args()
-        .nth(2)
-        .expect("usage: parse <file> <output dir>");
-    let output_dir = PathBuf::from(output_dir);
-
+    let output_dir = opt.output;
     assert_eq!(output_dir.is_file(), false);
 
+    for path in opt.input {
+        convert(&path, &output_dir)?;
+    }
+
+    Ok(())
+}
+
+fn convert(path: &Path, output_dir: &Path) -> Result<()> {
     let mut parser = Parser::new();
 
     match path.extension().map(|p| p.to_string_lossy()).as_deref() {
         Some("one") => {
+            println!(
+                "Processing {}",
+                style(path.file_name().unwrap_or_default().to_string_lossy()).bright()
+            );
+
             let section = with_progress("Parsing input file...", || parser.parse_section(&path))?;
 
             section::Renderer::new().render(&section, output_dir)?;
         }
         Some("onetoc2") => {
+            println!(
+                "Processing {}",
+                style(
+                    path.parent()
+                        .unwrap()
+                        .file_name()
+                        .unwrap_or_default()
+                        .to_string_lossy()
+                )
+                .bright()
+            );
+
             let notebook =
                 with_progress("Parsing input files...", || parser.parse_notebook(&path))?;
 

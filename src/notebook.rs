@@ -78,7 +78,7 @@ impl Renderer {
         base_dir: &Path,
     ) -> Result<templates::notebook::Section> {
         let mut renderer = section::Renderer::new();
-        let path = renderer.render(section, dbg!(notebook_dir).to_path_buf())?;
+        let path = renderer.render(section, notebook_dir)?;
 
         Ok(templates::notebook::Section {
             name: section.display_name().to_string(),

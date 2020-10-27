@@ -4,7 +4,7 @@ use onenote_parser::section::Section;
 use std::cmp::min;
 use std::collections::HashSet;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub(crate) struct Renderer {
     pub(crate) files: HashSet<String>,
@@ -17,7 +17,7 @@ impl Renderer {
         }
     }
 
-    pub fn render(&mut self, section: &Section, output_dir: PathBuf) -> Result<PathBuf> {
+    pub fn render(&mut self, section: &Section, output_dir: &Path) -> Result<PathBuf> {
         let section_dir = output_dir.join(section.display_name());
 
         if !section_dir.is_dir() {
