@@ -18,11 +18,23 @@ cargo install --git https://github.com/msiemens/one2html
 ### Download OneNote files from OneDrive
 
 OneNote files can be retrieved using one of two methods: Either by
-downloading a notebook via the OneDrive web UI or by using the OneDrive
-graph API.
+using [onedrive-cli] or by downloading a notebook via the OneDrive web UI.
+To do this first install `onedrive-cli` following its instructions. After
+logging in using `onedrive-cli login`, you can download a section (a single
+`.one` file), or a notebook (a folder that contains a `.onetoc2` file along
+with other `.one` files):
 
-To download OneNote notebooks via the OneDrive web UI, follow these
-steps:
+```sh
+# Download a notebook
+onedrive-cli ls Documents/
+onedrive-cli cp -R :/Documents/Notebook .
+
+# Download a section
+onedrive-cli cp -R :/Documents/Notebook/Section.one .
+```
+
+Alternatively, to download OneNote notebooks via the OneDrive web UI, follow
+these steps:
 
 1. Visit https://onedrive.live.com/
 2. Select the folder that contains your notebooks. Typically this is
@@ -30,19 +42,13 @@ steps:
 3. Use the _Download_ button from the toolbar to download a ZIP file
    that contains all of your OneNote notebooks.
 
-Alternatively you can download your OneNote files using the OneDrive API.
-You can either use the API directly using the [Microsoft Graph Explorer](https://developer.microsoft.com/en-us/graph/graph-explorer)
-or use a tool like [onedrive-cli](https://github.com/lionello/onedrive-cli)
-to download a section (a single `.one` file), or a notebook (a folder that
-contains a `.onetoc2` file along with other `.one` files).
-
 ### Convert OneNote files to HTML
 
 OneNote sections are stored in `.one` files. To convert a section
 to HTML run:
 
 ```sh
-one2html Section.one ./output_dir/
+one2html -i Section.one -o ./output_dir/
 ```
 
 OneNote notebooks are stored as folders that contain a `.onetoc2`
@@ -50,7 +56,7 @@ file along with the notebook's sections stored as `.one` files.
 To convert a notebook to HTML run:
 
 ```sh
-one2html 'Notebook/Open Notebook.onetoc2' ./output_dir/
+one2html -i 'Notebook/Open Notebook.onetoc2' -o ./output_dir/
 ```
 
 ## Limitations
@@ -64,4 +70,5 @@ this tool.
 
 This project is neither related to nor endorsed by Microsoft in any way. The
 author does not have any affiliation with Microsoft.
- 
+
+[onedrive-cli]: https://github.com/lionello/onedrive-cli
