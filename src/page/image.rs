@@ -28,7 +28,7 @@ impl<'a> Renderer<'a> {
             }
 
             if let Some(height) = image.layout_max_height() {
-                styles.set("max-width", px(height));
+                styles.set("max-height", px(height));
             }
 
             if styles.len() > 0 {
