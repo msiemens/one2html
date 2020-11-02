@@ -41,7 +41,7 @@ impl Renderer {
                     )?));
                 }
                 SectionEntry::SectionGroup(group) => {
-                    let group_dir = dbg!(notebook_dir.join(group.display_name()));
+                    let group_dir = notebook_dir.join(group.display_name());
                     if !group_dir.is_dir() {
                         fs::create_dir(&group_dir)?;
                     }
