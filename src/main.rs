@@ -5,6 +5,7 @@ use crate::utils::with_progress;
 use color_eyre::eyre::Result;
 use color_eyre::eyre::{eyre, ContextCompat};
 use console::style;
+use log::LevelFilter;
 use onenote_parser::Parser;
 use std::path::Path;
 use std::process::exit;
@@ -35,6 +36,8 @@ fn main() {
 }
 
 fn _main() -> Result<()> {
+    happylog::initialize(LevelFilter::Info)?;
+
     let opt: Opt = Opt::from_args();
 
     color_eyre::install()?;
@@ -54,30 +57,25 @@ fn convert(path: &Path, output_dir: &Path) -> Result<()> {
 
     match path.extension().map(|p| p.to_string_lossy()).as_deref() {
         Some("one") => {
-            println!(
-                "Processing {}",
-                style(path.file_name().unwrap_or_default().to_string_lossy()).bright()
-            );
+            let name = path.file_name().unwrap_or_default().to_string_lossy();
+            println!("Processing section {}...", style(&name).bright());
 
             let section = with_progress("Parsing input file...", || parser.parse_section(&path))?;
 
             section::Renderer::new().render(&section, output_dir)?;
         }
         Some("onetoc2") => {
-            println!(
-                "Processing {}",
-                style(
-                    path.parent()
-                        .unwrap()
-                        .file_name()
-                        .unwrap_or_default()
-                        .to_string_lossy()
-                )
-                .bright()
-            );
+            let name = path
+                .parent()
+                .unwrap()
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy();
+            println!("Processing notebook {}...", style(&name).bright());
 
-            let notebook =
-                with_progress("Parsing input files...", || parser.parse_notebook(&path))?;
+            let notebook = with_progress("[1/2] Parsing input files...", || {
+                parser.parse_notebook(&path)
+            })?;
 
             let notebook_name = path
                 .parent()
@@ -86,7 +84,7 @@ fn convert(path: &Path, output_dir: &Path) -> Result<()> {
                 .wrap_err("Parent folder has no name")?
                 .to_string_lossy();
 
-            with_progress("Rendering sections...", || {
+            with_progress("[2/2] Rendering sections...", || {
                 notebook::Renderer::new().render(&notebook, &notebook_name, &output_dir)
             })?;
         }

@@ -297,6 +297,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaf91faf136cb47367fa430cd46e37a788775e7fa104f8b4bcb3861dc389b724"
 
 [[package]]
+name = "happylog"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "894108581449e245906eff5cf1365929ad2968197702bba89ac8a1e977d331a3"
+dependencies = [
+ "console 0.13.0",
+ "indicatif",
+ "log",
+ "structopt",
+]
+
+[[package]]
 name = "heck"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -463,8 +475,10 @@ dependencies = [
  "askama",
  "color-eyre",
  "console 0.12.0",
+ "happylog",
  "indicatif",
  "itertools",
+ "log",
  "mime_guess",
  "once_cell",
  "onenote_parser",

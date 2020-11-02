@@ -1,4 +1,3 @@
-use console::style;
 use indicatif::ProgressBar;
 use itertools::Itertools;
 use std::collections::HashMap;
@@ -10,11 +9,13 @@ pub(crate) fn with_progress<T, F: FnMut() -> T>(msg: &str, mut f: F) -> T {
     bar.set_message(msg);
     bar.enable_steady_tick(16);
 
+    let _state = happylog::set_progress(&bar);
+
     let ret = f();
 
     bar.finish_and_clear();
 
-    println!("{} {}", msg, style("done").green().bright().bold(),);
+    print!("\r");
 
     ret
 }

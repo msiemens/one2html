@@ -1,6 +1,6 @@
 use crate::page::Renderer;
 use color_eyre::Result;
-use console::style;
+use log::warn;
 use onenote_parser::contents::Content;
 
 impl<'a> Renderer<'a> {
@@ -11,7 +11,8 @@ impl<'a> Renderer<'a> {
             Content::EmbeddedFile(file) => self.render_embedded_file(file),
             Content::Table(table) => self.render_table(table),
             Content::Unknown => {
-                eprintln!("{} Page with unknown content", style("Warning:").yellow());
+                warn!("Page with unknown content");
+
                 Ok(String::new())
             }
         }
