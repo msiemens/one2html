@@ -31,6 +31,18 @@ impl<'a> Renderer<'a> {
                 styles.set("max-height", px(height));
             }
 
+            if image.offset_horizontal().is_some() || image.offset_vertical().is_some() {
+                styles.set("position", "absolute".to_string());
+            }
+
+            if let Some(offset) = image.offset_horizontal() {
+                styles.set("left", px(offset));
+            }
+
+            if let Some(offset) = image.offset_vertical() {
+                styles.set("top", px(offset));
+            }
+
             if styles.len() > 0 {
                 attrs.set("style", styles.to_string());
             }
