@@ -18,6 +18,7 @@ onenote_parser = "0.2.0"
 palette = "0.5.0"
 percent-encoding = "2.1.0"
 regex = "1"
+sanitize-filename = "0.3.0"
 structopt = "0.3"
 
 [profile.dev.package.backtrace]

@@ -23,7 +23,7 @@ impl Renderer {
             fs::create_dir(&output_dir)?;
         }
 
-        let notebook_dir = output_dir.join(name);
+        let notebook_dir = output_dir.join(sanitize_filename::sanitize(name));
 
         if !notebook_dir.is_dir() {
             fs::create_dir(&notebook_dir)?;
@@ -41,7 +41,8 @@ impl Renderer {
                     )?));
                 }
                 SectionEntry::SectionGroup(group) => {
-                    let group_dir = notebook_dir.join(group.display_name());
+                    let dir_name = sanitize_filename::sanitize(group.display_name());
+                    let group_dir = notebook_dir.join(dir_name);
                     if !group_dir.is_dir() {
                         fs::create_dir(&group_dir)?;
                     }

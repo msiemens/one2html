@@ -1,7 +1,6 @@
 use crate::{page, templates};
 use color_eyre::eyre::Result;
 use onenote_parser::section::Section;
-use std::cmp::min;
 use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -20,7 +19,7 @@ impl Renderer {
     }
 
     pub fn render(&mut self, section: &Section, output_dir: &Path) -> Result<PathBuf> {
-        let section_dir = output_dir.join(section.display_name());
+        let section_dir = output_dir.join(sanitize_filename::sanitize(section.display_name()));
 
         if !section_dir.is_dir() {
             fs::create_dir(&section_dir)?;
@@ -37,12 +36,11 @@ impl Renderer {
                     format!("Untitled Page {}", fallback_title_index)
                 });
 
-                let file_name = (&title[0..(min(title.len(), 250))])
-                    .trim()
-                    .replace("/", "_");
+                let file_name = title.trim().replace("/", "_");
                 let file_name = self.determine_page_filename(&file_name)?;
+                let file_name = sanitize_filename::sanitize(file_name + ".html");
 
-                let output_file = section_dir.join(file_name + ".html");
+                let output_file = section_dir.join(file_name);
 
                 let mut renderer = page::Renderer::new(section_dir.clone(), self);
                 let output = renderer.render_page(page)?;
@@ -69,7 +67,7 @@ impl Renderer {
 
     pub(crate) fn determine_page_filename(&mut self, filename: &str) -> Result<String> {
         let mut i = 0;
-        let mut current_filename = filename.to_string();
+        let mut current_filename = sanitize_filename::sanitize(filename);
 
         loop {
             if !self.pages.contains(&current_filename) {
