@@ -13,7 +13,7 @@ default = "deny"
 [bans]
 multiple-versions = "deny"
 wildcards = "warn"
-allow = [
+skip = [
     { name = "cfg-if" },
 ]
 
