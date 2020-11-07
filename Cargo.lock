@@ -475,6 +475,8 @@ dependencies = [
 [[package]]
 name = "onenote_parser"
 version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0149b3fb1061a1df6dff2e1fc8254d81d13149edd0111b6d4cb4b6bbd6ad713"
 dependencies = [
  "bytes",
  "encoding_rs",
