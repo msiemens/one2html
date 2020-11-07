@@ -13,6 +13,9 @@ default = "deny"
 [bans]
 multiple-versions = "deny"
 wildcards = "warn"
+allow = [
+    { name = "cfg-if" },
+]
 
 [sources]
 unknown-registry = "deny"
