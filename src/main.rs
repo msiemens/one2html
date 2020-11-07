@@ -1,4 +1,4 @@
-#![feature(backtrace)]
+#![cfg_attr(feature = "backtrace", feature(backtrace))]
 
 use crate::cli::Opt;
 use crate::utils::with_progress;
@@ -18,6 +18,7 @@ mod section;
 mod templates;
 mod utils;
 
+#[cfg(feature = "backtrace")]
 fn main() {
     if let Err(e) = _main() {
         eprintln!("{:?}", e);
@@ -30,6 +31,15 @@ fn main() {
             eprintln!("Caused by:");
             eprintln!("{}", bt)
         }
+
+        exit(1);
+    }
+}
+
+#[cfg(not(feature = "backtrace"))]
+fn main() {
+    if let Err(e) = _main() {
+        eprintln!("{:?}", e);
 
         exit(1);
     }
