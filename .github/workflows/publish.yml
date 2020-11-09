@@ -65,7 +65,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --dry-run ${{ matrix.args }}
+          args: --dry-run --no-default-features
       - name: docs check
         uses: actions-rs/cargo@v1
         with:
@@ -93,7 +93,7 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
         with:
           command: publish
-          args: ${{ matrix.args }}
+          args: --no-default-features
       - name: Create Release
         uses: actions/create-release@v1
         env:
