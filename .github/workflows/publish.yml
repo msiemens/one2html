@@ -19,6 +19,7 @@ jobs:
           - '--no-default-features'
         include:
           - rust: nightly
+            os: ubuntu-latest
             args: '--features backtrace'
 
     runs-on: ${{ matrix.os }}
