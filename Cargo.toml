@@ -9,6 +9,11 @@ repository = "https://github.com/msiemens/one2html"
 keywords = ["onenote"]
 categories = ["command-line-utilities", "encoding"]
 
+[features]
+default = ["backtrace"]
+
+backtrace = []
+
 [dependencies]
 askama = "0.10"
 color-eyre = "0.5"

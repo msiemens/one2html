@@ -13,6 +13,11 @@ Once you've installed the Rust toolchain run:
 cargo install one2html
 ```
 
+_Note:_ By default, One2HTML has support for printing stack traces when
+errors occur during OneNote file parsing. This however requires a nightly
+compiler. To compile with a stable compiler instead, add the `--no-default-features`
+flag to the `cargo install` command.
+
 ## Usage
 
 ### Download OneNote files from OneDrive
