@@ -1,8 +1,13 @@
 [package]
 name = "one2html"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Markus Siemens <markus@m-siemens.de>"]
 edition = "2018"
+description = "Convert Microsoft OneNote® notebooks to HTML"
+license = "MIT"
+repository = "https://github.com/msiemens/one2html"
+keywords = ["onenote"]
+categories = ["command-line-utilities", "encoding"]
 
 [dependencies]
 askama = "0.10"

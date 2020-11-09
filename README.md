@@ -10,7 +10,7 @@ requires the latest stable [Rust](https://www.rust-lang.org/) compiler.
 Once you've installed the Rust toolchain run: 
 
 ```sh
-cargo install --git https://github.com/msiemens/one2html
+cargo install one2html
 ```
 
 ## Usage
