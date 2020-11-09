@@ -65,7 +65,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: publish
-          args: --dry-run
+          args: --dry-run ${{ matrix.args }}
       - name: docs check
         uses: actions-rs/cargo@v1
         with:
