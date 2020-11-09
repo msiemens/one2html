@@ -32,7 +32,8 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         with:
-          command: build ${{ matrix.args }}
+          command: build
+          args: ${{ matrix.args }}
 
       - uses: actions-rs/cargo@v1
         with:
