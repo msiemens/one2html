@@ -39,7 +39,7 @@ impl<'a> Renderer<'a> {
 
         let mut text = data.text().to_string();
 
-        if text == "" {
+        if text.is_empty() {
             return Ok("&nbsp;".to_string());
         }
 
