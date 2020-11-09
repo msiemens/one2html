@@ -11,6 +11,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, "windows-latest"]
+        rust:
+          - stable
+          - beta
+          - nightly
+        args:
+          - '--no-default-features'
+        include:
+          - rust: nightly
+            args: '--features backtrace'
+
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
@@ -26,11 +36,11 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --tests
+          args: --tests ${{ matrix.args }}
       - name: cargo test
         uses: actions-rs/cargo@v1
         with:
-          command: test
+          command: test ${{ matrix.args }}
 
   cargo-deny:
     runs-on: ubuntu-latest
