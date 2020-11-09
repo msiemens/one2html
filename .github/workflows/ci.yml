@@ -14,11 +14,11 @@ jobs:
           - stable
           - beta
           - nightly
-        features:
-          - ''
+        args:
+          - '--no-default-features'
         include:
           - rust: nightly
-            features: backtrace
+            args: '--features backtrace'
 
     steps:
       - uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         with:
-          command: build --features ${{ matrix.features }}
+          command: build ${{ matrix.args }}
 
       - uses: actions-rs/cargo@v1
         with:
