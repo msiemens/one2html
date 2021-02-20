@@ -8,6 +8,7 @@ use std::path::PathBuf;
 pub(crate) mod content;
 pub(crate) mod embedded_file;
 pub(crate) mod image;
+pub(crate) mod ink;
 pub(crate) mod list;
 pub(crate) mod note_tag;
 pub(crate) mod outline;
@@ -93,6 +94,7 @@ impl<'a> Renderer<'a> {
             PageContent::Outline(outline) => self.render_outline(outline),
             PageContent::Image(image) => self.render_image(image),
             PageContent::EmbeddedFile(file) => self.render_embedded_file(file),
+            PageContent::Ink(ink) => self.render_ink(ink, None, false),
             PageContent::Unknown => Ok(String::new()),
         }
     }

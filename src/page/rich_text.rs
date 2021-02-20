@@ -33,7 +33,27 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    fn parse_content(&self, data: &RichText) -> Result<String> {
+    fn parse_content(&mut self, data: &RichText) -> Result<String> {
+        if !data.embedded_objects().is_empty() {
+            return Ok(data
+                .embedded_objects()
+                .iter()
+                .map(|object| match object {
+                    EmbeddedObject::Ink(container) => {
+                        self.render_ink(container.ink(), container.bounding_box(), true)
+                    }
+                    EmbeddedObject::InkSpace(space) => {
+                        Ok(format!("<span class=\"ink-space\" style=\"padding-left: {}; padding-top: {};\"></span>",
+                                   px(space.width()), px(space.height())))
+                    }
+                    EmbeddedObject::InkLineBreak => {
+                        Ok("<span class=\"ink-linebreak\"><br></span>".to_string())
+                    }
+                })
+                .collect::<Result<Vec<_>>>()?
+                .join(""));
+        }
+
         let indices = data.text_run_indices();
         let styles = data.text_run_formatting();
 
@@ -121,7 +141,13 @@ impl<'a> Renderer<'a> {
     }
 
     fn parse_paragraph_styles(&self, text: &RichText) -> StyleSet {
-        if text.text() == "" {
+        if !text.embedded_objects().is_empty() {
+            assert_eq!(
+                text.text(),
+                "",
+                "paragraph with text and embedded objects is not supported"
+            );
+
             return StyleSet::new();
         }
 
