@@ -88,7 +88,9 @@ impl<'a> Renderer<'a> {
         contents.push_str(&format!("<td {}>", attrs.to_string()));
 
         let cell_level = self.table_cell_level(cell.contents());
-        contents.push_str(&self.render_list(cell.contents().iter().map(|el| (el, cell_level)))?);
+
+        let elements = cell.contents().iter().map(|el| (el, 0, cell_level));
+        contents.push_str(&self.render_list(elements, cell.outline_indent_distance().value())?);
 
         contents.push_str("</td>");
 

@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Feature: Added support for ink drawings.
 
+### Fixed
+
+- Correctly calculate paragraph/list indentations.
+
 ## [1.0.0] - 2020-11-09
 
 - First public release

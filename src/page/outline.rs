@@ -38,8 +38,12 @@ impl<'a> Renderer<'a> {
         }
 
         contents.push_str(&format!("<div {}>", attrs));
-        let items_level = outline.items_level() - 1;
-        contents.push_str(&self.render_outline_items(outline.items(), items_level)?);
+        contents.push_str(&self.render_outline_items(
+            outline.items(),
+            0,
+            outline.child_level(),
+            outline.indents(),
+        )?);
         contents.push_str("</div>");
 
         Ok(contents)
@@ -48,16 +52,28 @@ impl<'a> Renderer<'a> {
     pub(crate) fn render_outline_items(
         &mut self,
         items: &[OutlineItem],
-        level: u8,
+        parent_level: u8,
+        current_level: u8,
+        indents: &[f32],
     ) -> Result<String> {
-        self.render_list(flatten_outline_items(items, level))
+        self.render_list(
+            flatten_outline_items(items, parent_level, current_level),
+            indents,
+        )
     }
 
     pub(crate) fn render_outline_element(
         &mut self,
         element: &OutlineElement,
-        level: u8,
+        parent_level: u8,
+        current_level: u8,
+        indents: &[f32],
     ) -> Result<String> {
+        let mut indent_width = 0.0;
+        for i in (parent_level + 1)..=current_level {
+            indent_width += indents.get(i as usize).copied().unwrap_or(0.75);
+        }
+
         let mut contents = String::new();
         let is_list = self.is_list(element);
 
@@ -65,7 +81,7 @@ impl<'a> Renderer<'a> {
         attrs.set("class", "outline-element".to_string());
 
         let mut styles = StyleSet::new();
-        styles.set("margin-left", px(0.75 * level as f32));
+        styles.set("margin-left", px(indent_width as f32));
         attrs.set("style", styles.to_string());
 
         if is_list {
@@ -94,12 +110,12 @@ impl<'a> Renderer<'a> {
         let children = element.children();
 
         if !children.is_empty() {
-            let child_level = if is_list {
-                element.child_level()
-            } else {
-                level + element.child_level()
-            };
-            contents.push_str(&self.render_outline_items(children, child_level)?);
+            contents.push_str(&self.render_outline_items(
+                children,
+                current_level,
+                current_level + element.child_level(),
+                indents,
+            )?);
         }
 
         if is_list {
@@ -114,12 +130,17 @@ impl<'a> Renderer<'a> {
 
 fn flatten_outline_items<'a>(
     items: &'a [OutlineItem],
-    level: u8,
-) -> Box<dyn Iterator<Item = (&'a OutlineElement, u8)> + 'a> {
+    parent_level: u8,
+    current_level: u8,
+) -> Box<dyn Iterator<Item = (&'a OutlineElement, u8, u8)> + 'a> {
     Box::new(items.iter().flat_map(move |item| match item {
-        OutlineItem::Element(element) => Box::new(Some((element, level)).into_iter()),
-        OutlineItem::Group(group) => {
-            flatten_outline_items(group.outlines(), group.child_level() + level)
+        OutlineItem::Element(element) => {
+            Box::new(Some((element, parent_level, current_level)).into_iter())
         }
+        OutlineItem::Group(group) => flatten_outline_items(
+            group.outlines(),
+            parent_level,
+            current_level + group.child_level(),
+        ),
     }))
 }

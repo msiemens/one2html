@@ -9,15 +9,16 @@ const FORMAT_NUMBERED_LIST: char = '\u{fffd}';
 impl<'a> Renderer<'a> {
     pub(crate) fn render_list<'b>(
         &mut self,
-        elements: impl Iterator<Item = (&'b OutlineElement, u8)>,
+        elements: impl Iterator<Item = (&'b OutlineElement, u8, u8)>,
+        indents: &[f32],
     ) -> Result<String> {
         let mut contents = String::new();
         let mut in_list = false;
         let mut list_end = None;
 
-        for (element, level) in elements {
+        for (element, parent_level, current_level) in elements {
             if !in_list && self.is_list(element) {
-                let tags = self.list_tags(element, level);
+                let tags = self.list_tags(element, current_level);
                 let list_start = tags.0;
                 list_end = Some(tags.1);
 
@@ -30,7 +31,12 @@ impl<'a> Renderer<'a> {
                 in_list = false;
             }
 
-            contents.push_str(&self.render_outline_element(element, level)?);
+            contents.push_str(&self.render_outline_element(
+                element,
+                parent_level,
+                current_level,
+                indents,
+            )?);
         }
 
         if in_list {
@@ -94,10 +100,8 @@ impl<'a> Renderer<'a> {
 
         item_style.set("padding-left", px(bullet_spacing));
 
-        if level == 0 {
-            container_style.set("position", "relative".to_string());
-            container_style.set("left", px(-bullet_spacing));
-        }
+        container_style.set("position", "relative".to_string());
+        container_style.set("left", px(-bullet_spacing));
 
         if let Some(font) = list_font {
             marker_style.set("font-family", font.to_string());
