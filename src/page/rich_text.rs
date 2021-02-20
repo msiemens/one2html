@@ -1,9 +1,9 @@
 use crate::page::Renderer;
-use crate::utils::{px, StyleSet};
+use crate::utils::{px, AttributeSet, StyleSet};
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Result;
 use once_cell::sync::Lazy;
-use onenote_parser::contents::RichText;
+use onenote_parser::contents::{EmbeddedObject, RichText};
 use onenote_parser::property::common::ColorRef;
 use onenote_parser::property::rich_text::{ParagraphAlignment, ParagraphStyling};
 use regex::{Captures, Regex};
@@ -11,6 +11,7 @@ use regex::{Captures, Regex};
 impl<'a> Renderer<'a> {
     pub(crate) fn render_rich_text(&mut self, text: &RichText) -> Result<String> {
         let mut content = String::new();
+        let mut attrs = AttributeSet::new();
         let mut style = self.parse_paragraph_styles(text);
 
         if let Some((note_tag_html, note_tag_styles)) = self.render_note_tags(text.note_tags()) {
@@ -24,9 +25,13 @@ impl<'a> Renderer<'a> {
             content = format!("<a href=\"{}\">{}</a>", content, content);
         }
 
+        if style.len() > 0 {
+            attrs.set("style", style.to_string());
+        }
+
         match text.paragraph_style().style_id() {
             Some(t) if !self.in_list && is_tag(t) => {
-                Ok(format!("<{} style=\"{}\">{}</{}>", t, style, content, t))
+                Ok(format!("<{} {}>{}</{}>", t, attrs, content, t))
             }
             _ if style.len() > 0 => Ok(format!("<span style=\"{}\">{}</span>", style, content)),
             _ => Ok(content),
@@ -60,7 +65,7 @@ impl<'a> Renderer<'a> {
         let mut text = data.text().to_string();
 
         if text.is_empty() {
-            return Ok("&nbsp;".to_string());
+            text = "&nbsp;".to_string();
         }
 
         if indices.is_empty() {
@@ -243,6 +248,13 @@ impl<'a> Renderer<'a> {
         if let Some(space) = style.paragraph_line_spacing_exact() {
             if space != 0.0 {
                 unimplemented!()
+            }
+
+            if let Some(size) = style.font_size() {
+                styles.set(
+                    "line-height",
+                    format!("{}px", (size as f32 * 1.2 / 72.0 * 48.0).floor()),
+                )
             }
         }
 
