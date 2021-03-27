@@ -12,9 +12,9 @@ impl<'a> Renderer<'a> {
         ink: &Ink,
         display_bounding_box: Option<&InkBoundingBox>,
         embedded: bool,
-    ) -> Result<String> {
+    ) -> String {
         if ink.ink_strokes().is_empty() {
-            return Ok(String::new());
+            return String::new();
         }
 
         let mut attrs = AttributeSet::new();
@@ -111,14 +111,14 @@ impl<'a> Renderer<'a> {
                 span_styles.set("height", px(bb.height() / Self::SVG_SCALING_FACTOR / 48.0));
             }
 
-            Ok(format!(
+            format!(
                 "<span style=\"{}\" class=\"ink-text\"><svg {}>{}</svg></span>",
                 span_styles.to_string(),
                 attrs.to_string(),
                 path
-            ))
+            )
         } else {
-            Ok(format!("<svg {}>{}</svg>", attrs.to_string(), path))
+            format!("<svg {}>{}</svg>", attrs.to_string(), path)
         }
     }
 

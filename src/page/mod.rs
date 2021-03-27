@@ -94,7 +94,7 @@ impl<'a> Renderer<'a> {
             PageContent::Outline(outline) => self.render_outline(outline),
             PageContent::Image(image) => self.render_image(image),
             PageContent::EmbeddedFile(file) => self.render_embedded_file(file),
-            PageContent::Ink(ink) => self.render_ink(ink, None, false),
+            PageContent::Ink(ink) => Ok(self.render_ink(ink, None, false)),
             PageContent::Unknown => Ok(String::new()),
         }
     }

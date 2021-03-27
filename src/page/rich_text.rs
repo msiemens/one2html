@@ -2,6 +2,7 @@ use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
 use color_eyre::eyre::ContextCompat;
 use color_eyre::Result;
+use itertools::Itertools;
 use once_cell::sync::Lazy;
 use onenote_parser::contents::{EmbeddedObject, RichText};
 use onenote_parser::property::common::ColorRef;
@@ -48,14 +49,14 @@ impl<'a> Renderer<'a> {
                         self.render_ink(container.ink(), container.bounding_box(), true)
                     }
                     EmbeddedObject::InkSpace(space) => {
-                        Ok(format!("<span class=\"ink-space\" style=\"padding-left: {}; padding-top: {};\"></span>",
-                                   px(space.width()), px(space.height())))
+                        format!("<span class=\"ink-space\" style=\"padding-left: {}; padding-top: {};\"></span>",
+                                px(space.width()), px(space.height()))
                     }
                     EmbeddedObject::InkLineBreak => {
-                        Ok("<span class=\"ink-linebreak\"><br></span>".to_string())
+                        "<span class=\"ink-linebreak\"><br></span>".to_string()
                     }
                 })
-                .collect::<Result<Vec<_>>>()?
+                .collect_vec()
                 .join(""));
         }
 

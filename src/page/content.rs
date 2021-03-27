@@ -10,7 +10,7 @@ impl<'a> Renderer<'a> {
             Content::Image(image) => self.render_image(image),
             Content::EmbeddedFile(file) => self.render_embedded_file(file),
             Content::Table(table) => self.render_table(table),
-            Content::Ink(ink) => self.render_ink(ink, None, false),
+            Content::Ink(ink) => Ok(self.render_ink(ink, None, false)),
             Content::Unknown => {
                 warn!("Page with unknown content");
 
