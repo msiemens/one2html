@@ -12,7 +12,7 @@ categories = ["command-line-utilities", "encoding"]
 [features]
 default = ["backtrace"]
 
-backtrace = []
+backtrace = ["onenote_parser/backtrace"]
 
 [dependencies]
 askama = "0.10"
@@ -24,7 +24,7 @@ itertools = "0.9.0"
 log = "0.4.11"
 mime_guess = "2.0.3"
 once_cell = "1.4.1"
-onenote_parser = { version = "0.3.0", features = ["backtrace"] }
+onenote_parser = { version = "0.3.0", default-features = false }
 palette = "0.5.0"
 percent-encoding = "2.1.0"
 regex = "1"
