@@ -103,9 +103,9 @@ impl<'a> Renderer<'a> {
             .any(|element| self.is_list(element) || self.has_note_tag(element));
 
         if needs_nesting {
-            1
+            2
         } else {
-            0
+            1
         }
     }
 }
