@@ -18,7 +18,7 @@ impl<'a> Renderer<'a> {
 
         for (element, parent_level, current_level) in elements {
             if !in_list && self.is_list(element) {
-                let tags = self.list_tags(element, current_level);
+                let tags = self.list_tags(element);
                 let list_start = tags.0;
                 list_end = Some(tags.1);
 
@@ -46,7 +46,7 @@ impl<'a> Renderer<'a> {
         Ok(contents)
     }
 
-    pub(crate) fn list_tags(&mut self, element: &OutlineElement, level: u8) -> (String, String) {
+    pub(crate) fn list_tags(&mut self, element: &OutlineElement) -> (String, String) {
         let list = element
             .list_contents()
             .first()
@@ -57,12 +57,12 @@ impl<'a> Renderer<'a> {
         } else {
             "ul"
         };
-        let attrs = self.list_attrs(list, element.list_spacing(), level);
+        let attrs = self.list_attrs(list, element.list_spacing());
 
         (format!("<{} {}>", tag, attrs), format!("</{}>", tag))
     }
 
-    fn list_attrs(&mut self, list: &List, spacing: Option<f32>, level: u8) -> AttributeSet {
+    fn list_attrs(&mut self, list: &List, spacing: Option<f32>) -> AttributeSet {
         let mut attrs = AttributeSet::new();
         let mut container_style = StyleSet::new();
         let mut item_style = StyleSet::new();
