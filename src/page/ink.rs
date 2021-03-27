@@ -1,6 +1,5 @@
 use crate::page::Renderer;
 use crate::utils::{px, AttributeSet, StyleSet};
-use color_eyre::Result;
 use itertools::Itertools;
 use onenote_parser::contents::{Ink, InkBoundingBox, InkPoint, InkStroke};
 
