@@ -53,7 +53,7 @@ fn _main() -> Result<()> {
     color_eyre::install()?;
 
     let output_dir = opt.output;
-    assert_eq!(output_dir.is_file(), false);
+    assert!(!output_dir.is_file());
 
     for path in opt.input {
         convert(&path, &output_dir)?;
