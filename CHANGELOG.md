@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- *Nothing yet*
+
+## [v1.1.0 - 2021-05-21]
+
 ### Added
 
 - Feature: Added support for ink drawings.
