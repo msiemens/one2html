@@ -136,7 +136,7 @@ impl<'a> Renderer<'a> {
         let stroke = &strokes[0];
 
         let opacity = (255 - stroke.transparency().unwrap_or_default()) as f32 / 256.0;
-        attrs.set("opacity", format!("{:.2}", opacity.round()));
+        attrs.set("opacity", format!("{:.2}", opacity));
 
         let color = if let Some(value) = stroke.color() {
             let r = value % 256;
