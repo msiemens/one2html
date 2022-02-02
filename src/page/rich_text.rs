@@ -254,7 +254,7 @@ impl<'a> Renderer<'a> {
             if let Some(size) = style.font_size() {
                 styles.set(
                     "line-height",
-                    format!("{}px", (size as f32 * 1.2 / 72.0 * 48.0).floor()),
+                    format!("{}px", (size as f32 * 1.2 / 72.0 * 48.0).ceil()),
                 )
             }
         }
