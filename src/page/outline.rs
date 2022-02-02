@@ -11,15 +11,12 @@ impl<'a> Renderer<'a> {
 
         attrs.set("class", "container-outline".to_string());
 
-        if let Some(width) = outline.layout_max_width() {
-            let outline_width = if outline.is_layout_size_set_by_user() {
-                width
-            } else {
-                width.max(13.0)
-            };
-
+        let outline_width = outline.layout_max_width().unwrap_or(13.0);
+        if outline.is_layout_size_set_by_user() {
+            styles.set("width", px(outline_width));
+        } else {
             styles.set("max-width", px(outline_width));
-        };
+        }
 
         if outline.offset_horizontal().is_some() || outline.offset_vertical().is_some() {
             styles.set("position", "absolute".to_string());
