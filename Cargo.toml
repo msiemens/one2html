@@ -15,7 +15,7 @@ default = ["backtrace"]
 backtrace = ["onenote_parser/backtrace"]
 
 [dependencies]
-askama = "0.10"
+askama = "0.14"
 color-eyre = "0.5"
 console = "0.14.0"
 happylog = { version = "0.2.0", features = ["structopt"] }
