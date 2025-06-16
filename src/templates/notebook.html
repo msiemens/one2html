@@ -5,7 +5,7 @@
 {% macro render(section, grouped) %}
     <li {% match section.color -%}
         {%- when Some with (color) -%}
-        style="border-left-color: rgba({{ color.color.red }}, {{ color.color.green }}, {{ color.color.blue }}, {{ color.alpha }}); {% if _bool(grouped) %} margin-left: 20px; {% endif %}"
+        style="border-left-color: rgba({{ color.color.red }}, {{ color.color.green }}, {{ color.color.blue }}, {{ color.alpha }}); {% if grouped %} margin-left: 20px; {% endif %}"
         {%- when None -%}
         {%- endmatch -%}
     >
