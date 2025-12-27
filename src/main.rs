@@ -1,13 +1,12 @@
 use crate::cli::Opt;
 use crate::utils::with_progress;
+use clap::Parser;
 use color_eyre::eyre::Result;
 use color_eyre::eyre::{eyre, ContextCompat};
 use console::style;
-use onenote_parser::Parser;
+use onenote_parser::Parser as OneNoteParser;
 use std::path::Path;
 use std::process::exit;
-use structopt::StructOpt;
-
 mod cli;
 mod notebook;
 mod page;
@@ -43,9 +42,10 @@ fn main() {
 }
 
 fn _main() -> Result<()> {
-    happylog::initialize(1)?;
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn"))
+        .try_init()?;
 
-    let opt: Opt = Opt::from_args();
+    let opt: Opt = Opt::parse();
 
     color_eyre::install()?;
 
@@ -60,7 +60,7 @@ fn _main() -> Result<()> {
 }
 
 fn convert(path: &Path, output_dir: &Path) -> Result<()> {
-    let mut parser = Parser::new();
+    let mut parser = OneNoteParser::new();
 
     match path.extension().map(|p| p.to_string_lossy()).as_deref() {
         Some("one") => {

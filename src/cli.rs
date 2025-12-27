@@ -1,14 +1,14 @@
+use clap::Parser;
 use std::path::PathBuf;
-use structopt::StructOpt;
 
-#[derive(StructOpt, Debug)]
-#[structopt(name = "one2html")]
+#[derive(Parser, Debug)]
+#[command(name = "one2html")]
 pub(crate) struct Opt {
     /// Input files (`.one` or `.onetoc2` files)
-    #[structopt(short, long, required = true, parse(from_os_str))]
+    #[arg(short, long, required = true, value_name = "FILE", num_args = 1..)]
     pub(crate) input: Vec<PathBuf>,
 
     /// Output directory
-    #[structopt(short, long, parse(from_os_str))]
+    #[arg(short, long, value_name = "DIR")]
     pub(crate) output: PathBuf,
 }

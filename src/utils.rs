@@ -5,9 +5,9 @@ use std::fmt::Display;
 use std::time::Duration;
 
 pub(crate) fn with_progress<T, F: FnMut() -> T>(msg: &'static str, mut f: F) -> T {
-    let bar = happylog::new_spinner();
+    let bar = indicatif::ProgressBar::new_spinner();
     bar.set_message(msg);
-    bar.enable_steady_tick(Duration::new(16, 0));
+    bar.enable_steady_tick(Duration::from_millis(16));
 
     let ret = f();
 
