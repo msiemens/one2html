@@ -10,5 +10,5 @@ const ASCII_SET: AsciiSet = percent_encoding::NON_ALPHANUMERIC.remove(path::MAIN
 #[allow(clippy::unnecessary_wraps)]
 #[askama::filter_fn]
 pub(crate) fn url_encode(str: &str, _: &dyn askama::Values) -> askama::Result<String> {
-    Ok(percent_encoding::utf8_percent_encode(&str, &ASCII_SET).to_string())
+    Ok(percent_encoding::utf8_percent_encode(str, &ASCII_SET).to_string())
 }

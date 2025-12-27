@@ -45,7 +45,7 @@ impl Display for AttributeSet {
             self.0
                 .iter()
                 .sorted_by(|(a, _), (b, _)| Ord::cmp(a, b))
-                .map(|(attr, value)| attr.to_string() + "=\"" + &value + "\"")
+                .map(|(attr, value)| attr.to_string() + "=\"" + value + "\"")
                 .join(" ")
         )
     }
@@ -64,7 +64,7 @@ impl StyleSet {
     }
 
     pub(crate) fn extend(&mut self, other: Self) {
-        self.0.extend(other.0.into_iter())
+        self.0.extend(other.0)
     }
 
     pub(crate) fn len(&self) -> usize {
@@ -80,7 +80,7 @@ impl Display for StyleSet {
             self.0
                 .iter()
                 .sorted_by(|(a, _), (b, _)| Ord::cmp(a, b))
-                .map(|(attr, value)| attr.to_string() + ": " + &value + ";")
+                .map(|(attr, value)| attr.to_string() + ": " + value + ";")
                 .join(" ")
         )
     }

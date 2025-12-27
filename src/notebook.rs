@@ -20,7 +20,7 @@ impl Renderer {
 
     pub fn render(&mut self, notebook: &Notebook, name: &str, output_dir: &Path) -> Result<()> {
         if !output_dir.is_dir() {
-            fs::create_dir(&output_dir)?;
+            fs::create_dir(output_dir)?;
         }
 
         let notebook_dir = output_dir.join(sanitize_filename::sanitize(name));
@@ -51,7 +51,7 @@ impl Renderer {
 
                     for entry in group.entries() {
                         if let SectionEntry::Section(section) = entry {
-                            entries.push(self.render_section(section, &group_dir, &output_dir)?);
+                            entries.push(self.render_section(section, &group_dir, output_dir)?);
                         } else {
                             return Err(eyre!("Nested section groups are not yet supported"));
                         }

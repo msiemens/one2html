@@ -177,6 +177,6 @@ impl<'a> Renderer<'a> {
     }
 
     pub(crate) fn is_list(&self, element: &OutlineElement) -> bool {
-        element.list_contents().first().is_some()
+        !element.list_contents().is_empty()
     }
 }

@@ -68,7 +68,7 @@ fn convert(path: &Path, output_dir: &Path) -> Result<()> {
             let name = path.file_name().unwrap_or_default().to_string_lossy();
             println!("Processing section {}...", style(&name).bright());
 
-            let section = with_progress("Parsing input file...", || parser.parse_section(&path))?;
+            let section = with_progress("Parsing input file...", || parser.parse_section(path))?;
 
             section::Renderer::new().render(&section, output_dir)?;
         }
@@ -82,7 +82,7 @@ fn convert(path: &Path, output_dir: &Path) -> Result<()> {
             println!("Processing notebook {}...", style(&name).bright());
 
             let notebook = with_progress("[1/2] Parsing input files...", || {
-                parser.parse_notebook(&path)
+                parser.parse_notebook(path)
             })?;
 
             let notebook_name = path
@@ -93,7 +93,7 @@ fn convert(path: &Path, output_dir: &Path) -> Result<()> {
                 .to_string_lossy();
 
             with_progress("[2/2] Rendering sections...", || {
-                notebook::Renderer::new().render(&notebook, &notebook_name, &output_dir)
+                notebook::Renderer::new().render(&notebook, &notebook_name, output_dir)
             })?;
         }
         Some(ext) => return Err(eyre!("Invalid file extension: {}", ext)),

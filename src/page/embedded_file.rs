@@ -8,18 +8,16 @@ use std::path::PathBuf;
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_embedded_file(&mut self, file: &EmbeddedFile) -> Result<String> {
-        let content;
-
         let filename = self.determine_filename(file.filename())?;
         fs::write(self.output.join(filename.clone()), file.data())
             .wrap_err("Failed to write embedded file")?;
 
         let file_type = Self::guess_type(file);
 
-        match file_type {
-            FileType::Audio => content = format!("<audio controls src=\"{}\"></audio>", filename),
-            FileType::Video => content = format!("<video controls src=\"{}\"></video>", filename),
-            FileType::Unknown => content = format!("<embed src=\"{}\" />", filename),
+        let content = match file_type {
+            FileType::Audio => format!("<audio controls src=\"{}\"></audio>", filename),
+            FileType::Video => format!("<video controls src=\"{}\"></video>", filename),
+            FileType::Unknown => format!("<embed src=\"{}\" />", filename),
         };
 
         Ok(self.render_with_note_tags(file.note_tags(), content))

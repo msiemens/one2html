@@ -46,24 +46,24 @@ impl<'a> Renderer<'a> {
             .max(ink.ink_strokes()[0].height())
             .max(140.0);
 
-        let x_min = x_min as f32 - stroke_strength / 2.0;
-        let y_min = y_min as f32 - stroke_strength / 2.0;
+        let x_min = x_min - stroke_strength / 2.0;
+        let y_min = y_min - stroke_strength / 2.0;
 
-        let width = width as f32 + stroke_strength + Self::SVG_SCALING_FACTOR;
-        let height = height as f32 + stroke_strength + Self::SVG_SCALING_FACTOR;
+        let width = width + stroke_strength + Self::SVG_SCALING_FACTOR;
+        let height = height + stroke_strength + Self::SVG_SCALING_FACTOR;
 
         styles.set(
             "height",
             format!(
                 "{}px",
-                ((height as f32) / (Self::SVG_SCALING_FACTOR)).round()
+                (height / (Self::SVG_SCALING_FACTOR)).round()
             ),
         );
         styles.set(
             "width",
             format!(
                 "{}px",
-                ((width as f32) / (Self::SVG_SCALING_FACTOR)).round()
+                (width / (Self::SVG_SCALING_FACTOR)).round()
             ),
         );
 
@@ -112,12 +112,12 @@ impl<'a> Renderer<'a> {
 
             format!(
                 "<span style=\"{}\" class=\"ink-text\"><svg {}>{}</svg></span>",
-                span_styles.to_string(),
-                attrs.to_string(),
+                span_styles,
+                attrs,
                 path
             )
         } else {
-            format!("<svg {}>{}</svg>", attrs.to_string(), path)
+            format!("<svg {}>{}</svg>", attrs, path)
         }
     }
 
@@ -167,7 +167,7 @@ impl<'a> Renderer<'a> {
 
         attrs.set("fill", "none".to_string());
 
-        format!("<path {} />", attrs.to_string())
+        format!("<path {} />", attrs)
     }
 
     fn render_ink_path_points(&self, stroke: &InkStroke) -> String {

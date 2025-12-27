@@ -50,7 +50,7 @@ impl Renderer {
                 toc.push((
                     title,
                     output_file
-                        .strip_prefix(&output_dir)?
+                        .strip_prefix(output_dir)?
                         .to_string_lossy()
                         .to_string(),
                     page.level(),
