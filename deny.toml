@@ -1,20 +1,26 @@
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
-yanked = "warn"
-notice = "deny"
+unmaintained = "workspace"
+
+ignore = [
+    "RUSTSEC-2021-0145"
+]
 
 [licenses]
-unlicensed = "deny"
-allow-osi-fsf-free = "either"
-copyleft = "allow"
-default = "deny"
+allow = [
+    "Apache-2.0",
+    "BSD-3-Clause",
+    "MIT",
+    "MPL-2.0",
+    "Unicode-3.0",
+]
 
 [bans]
 multiple-versions = "deny"
 wildcards = "warn"
 skip = [
-    { name = "cfg-if" },
+    { name = "hermit-abi" },
+    { name = "unicode-width" },
+    { name = "syn" },
 ]
 
 [sources]
