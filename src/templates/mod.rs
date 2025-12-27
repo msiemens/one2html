@@ -8,6 +8,7 @@ pub(crate) mod section;
 const ASCII_SET: AsciiSet = percent_encoding::NON_ALPHANUMERIC.remove(path::MAIN_SEPARATOR as u8);
 
 #[allow(clippy::unnecessary_wraps)]
-pub(crate) fn url_encode(str: &str, _: &dyn askama::Values) -> ::askama::Result<String> {
+#[askama::filter_fn]
+pub(crate) fn url_encode(str: &str, _: &dyn askama::Values) -> askama::Result<String> {
     Ok(percent_encoding::utf8_percent_encode(&str, &ASCII_SET).to_string())
 }

@@ -1,5 +1,3 @@
-#![cfg_attr(feature = "backtrace", feature(backtrace))]
-
 use crate::cli::Opt;
 use crate::utils::with_progress;
 use color_eyre::eyre::Result;
@@ -25,7 +23,7 @@ fn main() {
 
         if let Some(bt) = e
             .downcast_ref::<onenote_parser::errors::Error>()
-            .and_then(std::error::Error::backtrace)
+            .and_then(std::error::Error::source)
         {
             eprintln!();
             eprintln!("Caused by:");

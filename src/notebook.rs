@@ -5,7 +5,7 @@ use onenote_parser::notebook::Notebook;
 use onenote_parser::property::common::Color;
 use onenote_parser::section::{Section, SectionEntry};
 use palette::rgb::Rgb;
-use palette::{Alpha, ConvertFrom, Hsl, Saturate, Shade, Srgb};
+use palette::{Alpha, Darken, FromColor, Hsl, Saturate, Srgb};
 use std::fs;
 use std::path::Path;
 
@@ -92,8 +92,8 @@ impl Renderer {
 fn prepare_color(color: Color) -> RgbColor {
     Alpha {
         alpha: color.alpha() as f32 / 255.0,
-        color: Srgb::convert_from(
-            Hsl::convert_from(Srgb::new(
+        color: Srgb::from_color(
+            Hsl::from_color(Srgb::new(
                 color.r() as f32 / 255.0,
                 color.g() as f32 / 255.0,
                 color.b() as f32 / 255.0,

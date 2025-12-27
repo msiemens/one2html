@@ -19,11 +19,11 @@
         {% for entry in toc -%}
             {% match entry %}
                 {%- when Toc::Section with (section) -%}
-                    {% call render(section, false) %}
+                    {% call render(section, false) %}{% endcall %}
                 {%- when Toc::SectionGroup with (name, entries) -%}
                     <li>{{ name }}</li>
                     {% for section in entries %}
-                        {% call render(section, true) %}
+                        {% call render(section, true) %}{% endcall %}
                     {% endfor %}
             {%- endmatch -%}
         {% endfor %}
