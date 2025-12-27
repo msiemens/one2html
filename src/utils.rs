@@ -1,4 +1,3 @@
-use indicatif::ProgressBar;
 use itertools::Itertools;
 use std::collections::HashMap;
 use std::fmt;
@@ -6,11 +5,9 @@ use std::fmt::Display;
 use std::time::Duration;
 
 pub(crate) fn with_progress<T, F: FnMut() -> T>(msg: &'static str, mut f: F) -> T {
-    let bar = ProgressBar::new_spinner();
+    let bar = happylog::new_spinner();
     bar.set_message(msg);
     bar.enable_steady_tick(Duration::new(16, 0));
-
-    let _state = happylog::set_progress(&bar);
 
     let ret = f();
 

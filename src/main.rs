@@ -3,7 +3,6 @@ use crate::utils::with_progress;
 use color_eyre::eyre::Result;
 use color_eyre::eyre::{eyre, ContextCompat};
 use console::style;
-use log::LevelFilter;
 use onenote_parser::Parser;
 use std::path::Path;
 use std::process::exit;
@@ -44,7 +43,7 @@ fn main() {
 }
 
 fn _main() -> Result<()> {
-    happylog::initialize(LevelFilter::Info)?;
+    happylog::initialize(1)?;
 
     let opt: Opt = Opt::from_args();
 
