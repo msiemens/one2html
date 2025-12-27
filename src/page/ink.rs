@@ -54,17 +54,11 @@ impl<'a> Renderer<'a> {
 
         styles.set(
             "height",
-            format!(
-                "{}px",
-                (height / (Self::SVG_SCALING_FACTOR)).round()
-            ),
+            format!("{}px", (height / (Self::SVG_SCALING_FACTOR)).round()),
         );
         styles.set(
             "width",
-            format!(
-                "{}px",
-                (width / (Self::SVG_SCALING_FACTOR)).round()
-            ),
+            format!("{}px", (width / (Self::SVG_SCALING_FACTOR)).round()),
         );
 
         let display_y_min = display_bounding_box.map(|bb| bb.y()).unwrap_or_default();
@@ -112,9 +106,7 @@ impl<'a> Renderer<'a> {
 
             format!(
                 "<span style=\"{}\" class=\"ink-text\"><svg {}>{}</svg></span>",
-                span_styles,
-                attrs,
-                path
+                span_styles, attrs, path
             )
         } else {
             format!("<svg {}>{}</svg>", attrs, path)
