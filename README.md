@@ -5,18 +5,18 @@ into HTML.
 
 ## Installation
 
-At the moment only installation from source is supported. This
-requires the latest stable [Rust](https://www.rust-lang.org/) compiler.
+At the moment, only installation from source is supported. This
+requires the latest stable [Rust](https://www.rust-lang.org) compiler.
+
 Once you've installed the Rust toolchain run: 
 
 ```sh
-cargo install one2html
+cargo install --no-default-features one2html
 ```
 
-_Note:_ By default, One2HTML has support for printing stack traces when
-errors occur during OneNote file parsing. This however requires a nightly
-compiler. To compile with a stable compiler instead, add the `--no-default-features`
-flag to the `cargo install` command.
+If you are using [a nightly compiler][rust-nightly], you can omit the
+`--no-default-features` flag to print stack traces when errors occur during
+OneNote file parsing.
 
 ## Usage
 
@@ -41,7 +41,7 @@ onedrive-cli cp -R :/Documents/Notebook/Section.one .
 Alternatively, to download OneNote notebooks via the OneDrive web UI, follow
 these steps:
 
-1. Visit https://onedrive.live.com/
+1. Visit https://onedrive.live.com
 2. Select the folder that contains your notebooks. Typically this is
    the _Documents_ folder.
 3. Use the _Download_ button from the toolbar to download a ZIP file
@@ -78,4 +78,5 @@ one2html -i 'Notebook/Open Notebook.onetoc2' -o ./output_dir/
 This project is neither related to nor endorsed by Microsoft in any way. The
 author does not have any affiliation with Microsoft.
 
+[rust-nightly]: https://doc.rust-lang.org/book/appendix-07-nightly-rust.html#rustup-and-the-role-of-rust-nightly
 [onedrive-cli]: https://github.com/lionello/onedrive-cli
