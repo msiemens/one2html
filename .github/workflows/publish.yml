@@ -96,12 +96,102 @@ jobs:
         with:
           command: publish
           args: --no-default-features
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_artifacts:
+    name: Build artifacts
+    needs: [test, cargo-deny, publish_check]
+    if: startsWith(github.ref, 'refs/tags/')
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            feature_label: default
+            args: ""
+            archive_ext: tar.gz
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            feature_label: no-default
+            args: "--no-default-features"
+            archive_ext: tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            feature_label: default
+            args: ""
+            archive_ext: zip
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            feature_label: no-default
+            args: "--no-default-features"
+            archive_ext: zip
+          - os: macOS-latest
+            target: aarch64-apple-darwin
+            feature_label: default
+            args: ""
+            archive_ext: tar.gz
+          - os: macOS-latest
+            target: aarch64-apple-darwin
+            feature_label: no-default
+            args: "--no-default-features"
+            archive_ext: tar.gz
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      - name: cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.target }} ${{ matrix.args }}
+      - name: Package (unix)
+        if: runner.os != 'Windows'
+        run: |
+          set -euo pipefail
+          bin="one2html"
+          archive="one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}"
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/release/${bin}" "dist/${bin}"
+          tar -C dist -czf "${archive}" "${bin}"
+          shasum -a 256 "${archive}" > "${archive}.sha256"
+      - name: Package (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $bin = "one2html.exe"
+          $archive = "one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}"
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item "target/${{ matrix.target }}/release/$bin" "dist/$bin"
+          Compress-Archive -Path "dist/$bin" -DestinationPath $archive
+          $hash = (Get-FileHash -Algorithm SHA256 $archive).Hash.ToLower()
+          "$hash  $archive" | Out-File -FilePath "$archive.sha256" -Encoding ascii
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: one2html-${{ matrix.target }}-${{ matrix.feature_label }}
+          path: |
+            one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}
+            one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}.sha256
+
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+    needs: [publish, build_artifacts]
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: release-assets/*
           draft: false
           prerelease: false
