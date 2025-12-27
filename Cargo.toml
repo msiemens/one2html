@@ -18,8 +18,7 @@ backtrace = ["onenote_parser/backtrace"]
 askama = "0.15"
 color-eyre = "0.6"
 console = "0.16"
-happylog = { version = "0.2", features = ["structopt"] }
-indicatif = "0.18"
+happylog = { version = "0.3.0-b8", features = ["structopt"] }
 itertools = "0.14"
 log = "0.4"
 mime_guess = "2.0"
