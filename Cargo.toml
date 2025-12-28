@@ -1,6 +1,6 @@
 [package]
 name = "one2html"
-version = "1.1.1"
+version = "1.2.0"
 authors = ["Markus Siemens <markus@m-siemens.de>"]
 edition = "2024"
 description = "Convert Microsoft OneNote® notebooks to HTML"
@@ -24,7 +24,7 @@ itertools = "0.14"
 log = "0.4"
 mime_guess = "2.0"
 once_cell = "1.21"
-onenote_parser = { version = "0.4", default-features = false }
+onenote_parser = { version = "1.0", default-features = false }
 palette = "0.7"
 percent-encoding = "2.3"
 regex = "1.12"

@@ -515,7 +515,7 @@ checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 
 [[package]]
 name = "one2html"
-version = "1.1.1"
+version = "1.2.0"
 dependencies = [
  "askama",
  "clap",
@@ -536,9 +536,9 @@ dependencies = [
 
 [[package]]
 name = "onenote_parser"
-version = "0.4.1"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32ac075eaf46e48a544eaa636092dff2de53b29d0f212eef7a4d76192a09fea8"
+checksum = "6c49ab4c751e9d9c9148891972d8e280a7ff2344ed0d8fe8bc52429923e09520"
 dependencies = [
  "bytes",
  "encoding_rs",
@@ -1022,10 +1022,6 @@ dependencies = [
 
 [[package]]
 name = "zmij"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6d6085d62852e35540689d1f97ad663e3971fc19cf5eceab364d62c646ea167"
-
-[[patch.unused]]
-name = "onenote_parser"
-version = "1.0.0"
+checksum = "f5858cd3a46fff31e77adea2935e357e3a2538d870741617bfb7c943e218fee6"
