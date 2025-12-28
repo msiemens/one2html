@@ -60,7 +60,7 @@ fn _main() -> Result<()> {
 }
 
 fn convert(path: &Path, output_dir: &Path) -> Result<()> {
-    let mut parser = OneNoteParser::new();
+    let parser = OneNoteParser::new();
 
     match path.extension().map(|p| p.to_string_lossy()).as_deref() {
         Some("one") => {

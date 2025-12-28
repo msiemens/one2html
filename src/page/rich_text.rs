@@ -171,12 +171,11 @@ impl<'a> Renderer<'a> {
             styles.set("padding-bottom", px(text.paragraph_space_after()))
         }
 
-        if let Some(line_spacing) = text.paragraph_line_spacing_exact() {
-            if line_spacing > 0.0 {
+        if let Some(line_spacing) = text.paragraph_line_spacing_exact()
+            && line_spacing > 0.0 {
                 dbg!(text);
                 unimplemented!();
             }
-        }
 
         match text.paragraph_alignment() {
             ParagraphAlignment::Center => styles.set("text-align", "center".to_string()),
@@ -234,17 +233,15 @@ impl<'a> Renderer<'a> {
             unimplemented!()
         }
 
-        if let Some(space) = style.paragraph_space_before() {
-            if space != 0.0 {
+        if let Some(space) = style.paragraph_space_before()
+            && space != 0.0 {
                 unimplemented!()
             }
-        }
 
-        if let Some(space) = style.paragraph_space_after() {
-            if space != 0.0 {
+        if let Some(space) = style.paragraph_space_after()
+            && space != 0.0 {
                 unimplemented!()
             }
-        }
 
         if let Some(space) = style.paragraph_line_spacing_exact() {
             if space != 0.0 {
