@@ -2,12 +2,15 @@ use crate::page::Renderer;
 use crate::utils::{AttributeSet, StyleSet, px};
 use color_eyre::Result;
 use color_eyre::eyre::ContextCompat;
+use color_eyre::eyre::WrapErr;
 use itertools::Itertools;
+use log::warn;
 use once_cell::sync::Lazy;
-use onenote_parser::contents::{EmbeddedObject, RichText};
+use onenote_parser::contents::{EmbeddedObject, MathInlineObject, RichText};
 use onenote_parser::property::common::ColorRef;
 use onenote_parser::property::rich_text::{ParagraphAlignment, ParagraphStyling};
 use regex::{Captures, Regex};
+use std::iter::repeat;
 
 impl<'a> Renderer<'a> {
     pub(crate) fn render_rich_text(&mut self, text: &RichText) -> Result<String> {
@@ -63,24 +66,131 @@ impl<'a> Renderer<'a> {
         let indices = data.text_run_indices();
         let styles = data.text_run_formatting();
 
+        if indices.len() > styles.len() {
+            warn!(
+                "Some text runs have no corresponding styles: {:?} vs {:?}",
+                indices, styles
+            );
+        }
+
         let mut text = data.text().to_string();
 
         if text.is_empty() {
             text = "&nbsp;".to_string();
         }
 
-        if indices.is_empty() {
-            return Ok(fix_newlines(&text));
-        }
+        let parts = if !indices.is_empty() {
+            self.split_by_indices(indices, text)?
+        } else {
+            vec![text]
+        };
 
-        assert!(indices.len() + 1 >= styles.len());
+        // Render text run styles
+        let content = self.render_text_run_styles(styles, parts)?;
 
+        // Render math groups
+        let content = self.render_math_text_runs(data, styles, content)?;
+
+        Ok(fix_newlines(content))
+    }
+
+    fn render_math_text_runs(
+        &mut self,
+        data: &RichText,
+        styles: &[ParagraphStyling],
+        content: Vec<String>,
+    ) -> Result<String> {
+        let math_groups = content
+            .into_iter()
+            .zip(styles.iter())
+            .chunk_by(|(_text, style)| style.math_formatting());
+
+        let mut math_object_offset = 0;
+
+        let contents = (&math_groups)
+            .into_iter()
+            .map(|(is_math, group)| {
+                let group_parts = group.collect_vec();
+                let text = group_parts.iter().map(|(text, _)| text).join("");
+
+                if !is_math {
+                    return Ok(text);
+                }
+
+                let inline_objects = data.math_inline_objects();
+
+                if math_object_offset >= inline_objects.len() {
+                    let segment = (text, MathInlineObject::default());
+                    return self.render_math(vec![segment]);
+                }
+
+                let count = group_parts.len();
+                let objects = inline_objects[math_object_offset..math_object_offset + count]
+                    .iter()
+                    .copied();
+                let segments = group_parts
+                    .into_iter()
+                    .map(|(text, _)| text)
+                    .zip(objects)
+                    .collect_vec();
+
+                let text = self.render_math(segments)?;
+                math_object_offset += count;
+
+                Ok(text)
+            })
+            .collect::<Result<Vec<_>>>()?
+            .join("");
+
+        Ok(contents)
+    }
+
+    fn render_text_run_styles(
+        &mut self,
+        styles: &[ParagraphStyling],
+        parts: Vec<String>,
+    ) -> Result<Vec<String>> {
+        let mut in_hyperlink = false;
+
+        parts
+            .into_iter()
+            .rev()
+            .zip(styles.iter().map(Some).chain(repeat(None)))
+            .map(|(text, style)| {
+                let style = match style {
+                    Some(style) => style,
+                    None => return Ok(text),
+                };
+
+                if style.hyperlink() {
+                    let text = self.render_hyperlink(text, style, in_hyperlink);
+                    in_hyperlink = true;
+
+                    return text;
+                }
+
+                in_hyperlink = false;
+
+                let style = self.parse_style(style);
+
+                if style.len() > 0 {
+                    Ok(format!("<span style=\"{}\">{}</span>", style, text))
+                } else {
+                    Ok(text)
+                }
+            })
+            .collect::<Result<Vec<String>>>()
+    }
+
+    fn split_by_indices(&self, indices: &[u32], text: String) -> Result<Vec<String>> {
         // Split text into parts specified by indices
-        let mut parts: Vec<String> = vec![];
+        let mut parts = vec![];
+
+        let mut text = text.encode_utf16().collect::<Vec<u16>>();
 
         for i in indices.iter().copied().rev() {
-            let part = text.chars().skip(i as usize).collect();
-            text = text.chars().take(i as usize).collect();
+            let part = text[i as usize..].to_vec();
+            text = text[0..i as usize].to_vec();
 
             parts.push(part);
         }
@@ -89,33 +199,10 @@ impl<'a> Renderer<'a> {
             parts.push(text);
         }
 
-        let mut in_hyperlink = false;
-
-        let content = parts
+        parts
             .into_iter()
-            .rev()
-            .zip(styles.iter())
-            .map(|(text, style)| {
-                if style.hyperlink() {
-                    let text = self.render_hyperlink(text, style, in_hyperlink);
-                    in_hyperlink = true;
-
-                    text
-                } else {
-                    in_hyperlink = false;
-
-                    let style = self.parse_style(style);
-
-                    if style.len() > 0 {
-                        Ok(format!("<span style=\"{}\">{}</span>", style, text))
-                    } else {
-                        Ok(text)
-                    }
-                }
-            })
-            .collect::<Result<String>>()?;
-
-        Ok(fix_newlines(&content))
+            .map(|text| String::from_utf16(&text).wrap_err("Failed to parse rich text contents"))
+            .collect::<Result<Vec<_>>>()
     }
 
     fn render_hyperlink(
@@ -190,6 +277,10 @@ impl<'a> Renderer<'a> {
     fn parse_style(&self, style: &ParagraphStyling) -> StyleSet {
         let mut styles = StyleSet::new();
 
+        if style.math_formatting() {
+            return styles;
+        }
+
         if style.bold() {
             styles.set("font-weight", "bold".to_string());
         }
@@ -259,12 +350,12 @@ impl<'a> Renderer<'a> {
             }
         }
 
-        if style.math_formatting() {
-            // FIXME: Handle math formatting
-            // See https://docs.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-gettextex
-            // for unicode chars used
-            // unimplemented!()
-        }
+        // if style.math_formatting() {
+        //     // FIXME: Handle math formatting
+        //     // See https://docs.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-gettextex
+        //     // for unicode chars used
+        //     unimplemented!()
+        // }
 
         styles
     }
@@ -274,7 +365,7 @@ fn is_tag(tag: &str) -> bool {
     !matches!(tag, "PageDateTime" | "PageTitle")
 }
 
-fn fix_newlines(text: &str) -> String {
+fn fix_newlines(text: String) -> String {
     static REGEX_LEADING_SPACES: Lazy<Regex> =
         Lazy::new(|| Regex::new(r"<br>(\s+)").expect("failed to compile regex"));
 
