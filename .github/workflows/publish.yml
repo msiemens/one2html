@@ -101,17 +101,14 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             args: "--no-default-features"
-            feature_label: no-default
             archive_ext: tar.gz
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             args: "--no-default-features"
-            feature_label: no-default
             archive_ext: zip
           - os: macOS-latest
             target: aarch64-apple-darwin
             args: "--no-default-features"
-            feature_label: no-default
             archive_ext: tar.gz
 
     runs-on: ${{ matrix.os }}
@@ -132,7 +129,7 @@ jobs:
         run: |
           set -euo pipefail
           bin="one2html"
-          archive="one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}"
+          archive="one2html-${{ matrix.target }}.${{ matrix.archive_ext }}"
           mkdir -p dist
           cp "target/${{ matrix.target }}/release/${bin}" "dist/${bin}"
           tar -C dist -czf "${archive}" "${bin}"
@@ -142,7 +139,7 @@ jobs:
         shell: pwsh
         run: |
           $bin = "one2html.exe"
-          $archive = "one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}"
+          $archive = "one2html-${{ matrix.target }}.${{ matrix.archive_ext }}"
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item "target/${{ matrix.target }}/release/$bin" "dist/$bin"
           Compress-Archive -Path "dist/$bin" -DestinationPath $archive
@@ -151,10 +148,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: one2html-${{ matrix.target }}-${{ matrix.feature_label }}
+          name: one2html-${{ matrix.target }}
           path: |
-            one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}
-            one2html-${{ matrix.target }}-${{ matrix.feature_label }}.${{ matrix.archive_ext }}.sha256
+            one2html-${{ matrix.target }}.${{ matrix.archive_ext }}
+            one2html-${{ matrix.target }}.${{ matrix.archive_ext }}.sha256
 
   release:
     name: Create release
