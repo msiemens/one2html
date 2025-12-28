@@ -1,10 +1,3 @@
-[advisories]
-unmaintained = "workspace"
-
-ignore = [
-    "RUSTSEC-2021-0145"
-]
-
 [licenses]
 allow = [
     "Apache-2.0",
@@ -17,11 +10,6 @@ allow = [
 [bans]
 multiple-versions = "deny"
 wildcards = "warn"
-skip = [
-    { name = "hermit-abi" },
-    { name = "unicode-width" },
-    { name = "syn" },
-]
 
 [sources]
 unknown-registry = "deny"
