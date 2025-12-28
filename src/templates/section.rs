@@ -1,6 +1,6 @@
 use askama::Template;
-use color_eyre::eyre::WrapErr;
 use color_eyre::Result;
+use color_eyre::eyre::WrapErr;
 
 #[derive(Template)]
 #[template(path = "section.html")]

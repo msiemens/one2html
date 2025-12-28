@@ -1,7 +1,7 @@
 use crate::page::Renderer;
-use crate::utils::{px, AttributeSet, StyleSet};
-use color_eyre::eyre::WrapErr;
+use crate::utils::{AttributeSet, StyleSet, px};
 use color_eyre::Result;
+use color_eyre::eyre::WrapErr;
 use onenote_parser::contents::Image;
 use std::fs;
 

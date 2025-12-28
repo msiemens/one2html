@@ -2,7 +2,7 @@ use crate::cli::Opt;
 use crate::utils::with_progress;
 use clap::Parser;
 use color_eyre::eyre::Result;
-use color_eyre::eyre::{eyre, ContextCompat};
+use color_eyre::eyre::{ContextCompat, eyre};
 use console::style;
 use onenote_parser::Parser as OneNoteParser;
 use std::path::Path;

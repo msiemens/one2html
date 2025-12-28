@@ -1,5 +1,5 @@
 use crate::page::Renderer;
-use crate::utils::{px, AttributeSet, StyleSet};
+use crate::utils::{AttributeSet, StyleSet, px};
 use color_eyre::Result;
 use onenote_parser::contents::{Outline, OutlineElement, OutlineItem};
 

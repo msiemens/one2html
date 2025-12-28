@@ -1,5 +1,5 @@
 use crate::page::Renderer;
-use crate::utils::{px, AttributeSet, StyleSet};
+use crate::utils::{AttributeSet, StyleSet, px};
 use itertools::Itertools;
 use onenote_parser::contents::{Ink, InkBoundingBox, InkPoint, InkStroke};
 

@@ -1,7 +1,7 @@
 use crate::notebook::RgbColor;
 use askama::Template;
-use color_eyre::eyre::WrapErr;
 use color_eyre::Result;
+use color_eyre::eyre::WrapErr;
 
 #[derive(Template)]
 #[template(path = "notebook.html")]

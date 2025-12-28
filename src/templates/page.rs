@@ -1,7 +1,7 @@
 use crate::utils::StyleSet;
 use askama::Template;
-use color_eyre::eyre::WrapErr;
 use color_eyre::Result;
+use color_eyre::eyre::WrapErr;
 use itertools::Itertools;
 use std::collections::HashMap;
 

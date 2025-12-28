@@ -1,5 +1,5 @@
 use crate::page::Renderer;
-use crate::utils::{px, AttributeSet, StyleSet};
+use crate::utils::{AttributeSet, StyleSet, px};
 use color_eyre::Result;
 use onenote_parser::contents::{OutlineElement, Table, TableCell};
 
@@ -102,11 +102,7 @@ impl<'a> Renderer<'a> {
             .iter()
             .any(|element| self.is_list(element) || self.has_note_tag(element));
 
-        if needs_nesting {
-            2
-        } else {
-            1
-        }
+        if needs_nesting { 2 } else { 1 }
     }
 }
 

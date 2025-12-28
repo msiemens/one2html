@@ -1,6 +1,6 @@
 use crate::templates::notebook::Toc;
 use crate::{section, templates};
-use color_eyre::eyre::{eyre, Result};
+use color_eyre::eyre::{Result, eyre};
 use onenote_parser::notebook::Notebook;
 use onenote_parser::property::common::Color;
 use onenote_parser::section::{Section, SectionEntry};

@@ -1,7 +1,7 @@
 use crate::page::Renderer;
-use crate::utils::{px, AttributeSet, StyleSet};
-use color_eyre::eyre::ContextCompat;
+use crate::utils::{AttributeSet, StyleSet, px};
 use color_eyre::Result;
+use color_eyre::eyre::ContextCompat;
 use itertools::Itertools;
 use once_cell::sync::Lazy;
 use onenote_parser::contents::{EmbeddedObject, RichText};
@@ -172,10 +172,11 @@ impl<'a> Renderer<'a> {
         }
 
         if let Some(line_spacing) = text.paragraph_line_spacing_exact()
-            && line_spacing > 0.0 {
-                dbg!(text);
-                unimplemented!();
-            }
+            && line_spacing > 0.0
+        {
+            dbg!(text);
+            unimplemented!();
+        }
 
         match text.paragraph_alignment() {
             ParagraphAlignment::Center => styles.set("text-align", "center".to_string()),
@@ -234,14 +235,16 @@ impl<'a> Renderer<'a> {
         }
 
         if let Some(space) = style.paragraph_space_before()
-            && space != 0.0 {
-                unimplemented!()
-            }
+            && space != 0.0
+        {
+            unimplemented!()
+        }
 
         if let Some(space) = style.paragraph_space_after()
-            && space != 0.0 {
-                unimplemented!()
-            }
+            && space != 0.0
+        {
+            unimplemented!()
+        }
 
         if let Some(space) = style.paragraph_line_spacing_exact() {
             if space != 0.0 {
