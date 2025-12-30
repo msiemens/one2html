@@ -5,14 +5,23 @@ into HTML.
 
 ## Installation
 
-At the moment, only installation from source is supported. This
-requires the latest stable [Rust](https://www.rust-lang.org) compiler.
+Choose one of the following installation options:
 
-Once you've installed the Rust toolchain run: 
+1. Download from [GitHub Releases][latest-releases].
+
+2. Install via [`cargo binstall`][cargo-binstall]:
 
 ```sh
-cargo install --no-default-features one2html
+cargo binstall one2html
 ```
+
+3. Build from source:
+
+```sh
+cargo install --locked --no-default-features one2html
+```
+
+All options require the latest stable [Rust][rust] compiler.
 
 If you are using [a nightly compiler][rust-nightly], you can omit the
 `--no-default-features` flag to print stack traces when errors occur during
@@ -70,8 +79,6 @@ one2html -i 'Notebook/Open Notebook.onetoc2' -o ./output_dir/
   only files downloaded from OneDrive are supported. This means you can't
   convert files created by the OneNote 2016 desktop application using
   this tool.
-- Ink drawings are not supported at the moment.
-- Math formulas are not rendered properly at the moment.
 
 ## Disclaimer
 
@@ -79,4 +86,11 @@ This project is neither related to nor endorsed by Microsoft in any way. The
 author does not have any affiliation with Microsoft.
 
 [rust-nightly]: https://doc.rust-lang.org/book/appendix-07-nightly-rust.html#rustup-and-the-role-of-rust-nightly
+
 [onedrive-cli]: https://github.com/lionello/onedrive-cli
+
+[latest-releases]: https://github.com/msiemens/one2html/releases/latest
+
+[rust]: https://www.rust-lang.org
+
+[cargo-binstall]: https://github.com/cargo-bins/cargo-binstall
