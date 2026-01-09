@@ -76,6 +76,18 @@ impl<'a> Renderer<'a> {
             }
         }
 
-        unimplemented!()
+        let mut i = 0;
+
+        loop {
+            let filename = format!("image{}", i);
+
+            if !self.section.files.contains(&filename) {
+                self.section.files.insert(filename.clone());
+
+                return Ok(filename);
+            }
+
+            i += 1;
+        }
     }
 }

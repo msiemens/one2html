@@ -1,6 +1,7 @@
 use crate::page::Renderer;
 use crate::utils::{AttributeSet, StyleSet, px};
 use color_eyre::Result;
+use log::warn;
 use onenote_parser::contents::{List, OutlineElement};
 use onenote_parser::property::common::ColorRef;
 
@@ -89,8 +90,10 @@ impl<'a> Renderer<'a> {
                 container_style.set("list-style-type", "lower-latin".to_string())
             }
             [FORMAT_NUMBERED_LIST, c, ..] => {
-                dbg!(c);
-                unimplemented!();
+                warn!(
+                    "Unsupported numbered list format marker {}; falling back to default numbering",
+                    c
+                );
             }
             [c] => marker_style.set("content", format!("'{}'", c)),
             _ => {}

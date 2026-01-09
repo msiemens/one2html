@@ -261,8 +261,10 @@ impl<'a> Renderer<'a> {
         if let Some(line_spacing) = text.paragraph_line_spacing_exact()
             && line_spacing > 0.0
         {
-            dbg!(text);
-            unimplemented!();
+            warn!(
+                "Paragraph exact line spacing not implemented; ignoring value {}",
+                line_spacing
+            );
         }
 
         match text.paragraph_alignment() {
@@ -322,24 +324,33 @@ impl<'a> Renderer<'a> {
         }
 
         if style.paragraph_alignment().is_some() {
-            unimplemented!()
+            warn!("Paragraph alignment in text run style not implemented; ignoring");
         }
 
         if let Some(space) = style.paragraph_space_before()
             && space != 0.0
         {
-            unimplemented!()
+            warn!(
+                "Paragraph space-before in text run style not implemented; ignoring value {}",
+                space
+            );
         }
 
         if let Some(space) = style.paragraph_space_after()
             && space != 0.0
         {
-            unimplemented!()
+            warn!(
+                "Paragraph space-after in text run style not implemented; ignoring value {}",
+                space
+            );
         }
 
         if let Some(space) = style.paragraph_line_spacing_exact() {
             if space != 0.0 {
-                unimplemented!()
+                warn!(
+                    "Paragraph exact line spacing in text run style not implemented; ignoring value {}",
+                    space
+                );
             }
 
             if let Some(size) = style.font_size() {
