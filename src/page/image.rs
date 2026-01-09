@@ -1,4 +1,5 @@
 use crate::page::Renderer;
+use crate::utils::sanitize_output_filename;
 use crate::utils::{AttributeSet, StyleSet, px};
 use color_eyre::Result;
 use color_eyre::eyre::WrapErr;
@@ -55,7 +56,8 @@ impl<'a> Renderer<'a> {
 
     fn determine_image_filename(&mut self, image: &Image) -> Result<String> {
         if let Some(name) = image.image_filename() {
-            return self.determine_filename(name);
+            let sanitized = sanitize_output_filename(name)?;
+            return self.determine_filename(&sanitized);
         }
 
         if let Some(ext) = image.extension() {

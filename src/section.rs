@@ -1,4 +1,5 @@
 use crate::{page, templates};
+use crate::utils::sanitize_output_filename;
 use color_eyre::eyre::Result;
 use onenote_parser::section::Section;
 use std::collections::HashSet;
@@ -59,7 +60,8 @@ impl Renderer {
         }
 
         let toc_html = templates::section::render(section.display_name(), toc)?;
-        let toc_file = output_dir.join(format!("{}.html", section.display_name()));
+        let toc_name = sanitize_output_filename(section.display_name())? + ".html";
+        let toc_file = output_dir.join(toc_name);
         fs::write(toc_file, toc_html)?;
 
         Ok(section_dir)

@@ -1,4 +1,5 @@
 use crate::templates::notebook::Toc;
+use crate::utils::sanitize_output_filename;
 use crate::{section, templates};
 use color_eyre::eyre::{Result, eyre};
 use onenote_parser::notebook::Notebook;
@@ -66,7 +67,8 @@ impl Renderer {
         }
 
         let toc_html = templates::notebook::render(name, &toc)?;
-        let toc_file = output_dir.join(format!("{}.html", name));
+        let toc_name = sanitize_output_filename(name)? + ".html";
+        let toc_file = output_dir.join(toc_name);
         fs::write(toc_file, toc_html)?;
 
         Ok(())

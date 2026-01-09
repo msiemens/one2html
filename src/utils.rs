@@ -1,8 +1,10 @@
 use itertools::Itertools;
+use color_eyre::eyre::{Result, eyre};
 use std::collections::HashMap;
 use std::fmt;
 use std::fmt::Display;
 use std::time::Duration;
+use std::path::Path;
 
 pub(crate) fn with_progress<T, F: FnMut() -> T>(msg: &'static str, mut f: F) -> T {
     let bar = indicatif::ProgressBar::new_spinner();
@@ -20,6 +22,20 @@ pub(crate) fn with_progress<T, F: FnMut() -> T>(msg: &'static str, mut f: F) -> 
 
 pub(crate) fn px(inches: f32) -> String {
     format!("{}px", (inches * 48.0).round())
+}
+
+pub(crate) fn sanitize_output_filename(filename: &str) -> Result<String> {
+    let basename = Path::new(filename)
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| eyre!("Output filename has no valid basename"))?;
+    let sanitized = sanitize_filename::sanitize(basename);
+
+    if sanitized.is_empty() {
+        return Err(eyre!("Output filename is empty after sanitization"));
+    }
+
+    Ok(sanitized)
 }
 
 pub(crate) struct AttributeSet(HashMap<&'static str, String>);

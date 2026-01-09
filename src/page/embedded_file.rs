@@ -1,4 +1,5 @@
 use crate::page::Renderer;
+use crate::utils::sanitize_output_filename;
 use color_eyre::Result;
 use color_eyre::eyre::{ContextCompat, WrapErr};
 use onenote_parser::contents::EmbeddedFile;
@@ -46,7 +47,8 @@ impl<'a> Renderer<'a> {
 
     pub(crate) fn determine_filename(&mut self, filename: &str) -> Result<String> {
         let mut i = 0;
-        let mut current_filename = filename.to_string();
+        let sanitized = sanitize_output_filename(filename)?;
+        let mut current_filename = sanitized.clone();
 
         loop {
             if !self.section.files.contains(&current_filename) {
@@ -55,7 +57,7 @@ impl<'a> Renderer<'a> {
                 return Ok(current_filename);
             }
 
-            let path = PathBuf::from(filename);
+            let path = PathBuf::from(&sanitized);
             let ext = path
                 .extension()
                 .wrap_err("Embedded file has no extension")?
