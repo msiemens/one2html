@@ -538,12 +538,11 @@ impl<'a> Renderer<'a> {
         style
     }
 
-    fn icon_fallback(
-        &self,
-        shape: NoteTagShape,
-        style: StyleSet,
-    ) -> (Cow<'static, str>, StyleSet) {
-        warn!("Note tag shape {:?} not implemented; using fallback icon", shape);
+    fn icon_fallback(&self, shape: NoteTagShape, style: StyleSet) -> (Cow<'static, str>, StyleSet) {
+        warn!(
+            "Note tag shape {:?} not implemented; using fallback icon",
+            shape
+        );
         (
             Cow::from(ICON_QUESTION_MARK),
             self.icon_style(IconSize::Normal, style),

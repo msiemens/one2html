@@ -1,5 +1,5 @@
-use crate::{page, templates};
 use crate::utils::sanitize_output_filename;
+use crate::{page, templates};
 use color_eyre::eyre::Result;
 use onenote_parser::section::Section;
 use std::collections::HashSet;
