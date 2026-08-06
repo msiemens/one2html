@@ -60,7 +60,15 @@ impl<'a> Renderer<'a> {
             return self.determine_filename(&sanitized);
         }
 
-        if let Some(ext) = image.extension() {
+        // The extension is read verbatim out of the OneNote file, so it is fully
+        // attacker controlled and must not reach `output.join()` unsanitized —
+        // separators in it would otherwise escape the output directory. If
+        // nothing survives sanitization, fall through to the extensionless name
+        // rather than failing the whole conversion.
+        if let Some(ext) = image
+            .extension()
+            .and_then(|ext| sanitize_output_filename(ext).ok())
+        {
             let mut i = 0;
 
             loop {
