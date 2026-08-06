@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2026-08-06
 
 ### Added
 
+- Support for files created by the OneNote desktop application (2016, 2019,
+  LTSC, …), in addition to files downloaded from OneDrive. The file format is
+  detected automatically.
 - Split the crate into a reusable library and an optional CLI binary (gated
   behind the `bin` feature), and add a `wasm32-unknown-unknown` build of the
   library.
@@ -29,11 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Emit OneNote's handwriting OCR as an SVG `<title>` on each rendered ink
   block, making the recognized text available to screen readers
   ([#9](https://github.com/msiemens/one2html/issues/9)).
+- Add a `--version` flag to the CLI.
 
 ### Changed
 
 - Update `onenote_parser` to 2.0.0 (see its
-  [changelog](https://github.com/msiemens/onenote.rs/blob/master/CHANGELOG.md)).
+  [release notes](https://github.com/msiemens/onenote.rs/releases/tag/v2.0.0)).
 - Stream image and embedded-file payloads to disk instead of buffering them in
   memory.
 - Sanitize output filenames for the target filesystem, so conversions are
@@ -58,13 +62,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- HTML-escape user-controllable strings — page titles, text runs, hyperlink
+  URLs, and `style`/`href`/`src` attribute values — to prevent HTML/script
+  injection from untrusted OneNote files.
+
+## [1.3.2] - 2026-08-06
+
+### Security
+
 - Prevent path traversal when writing images whose OneNote file extension
   contains path separators — the remaining unsanitized sibling of the
   CVE-2026-22810 embedded-file fix
   ([GHSA-86gx-fw5h-h2gp](https://github.com/msiemens/one2html/security/advisories/GHSA-86gx-fw5h-h2gp)).
-- HTML-escape user-controllable strings — page titles, text runs, hyperlink
-  URLs, and `style`/`href`/`src` attribute values — to prevent HTML/script
-  injection from untrusted OneNote files.
 
 ## [1.3.1] - 2026-05-15
 
