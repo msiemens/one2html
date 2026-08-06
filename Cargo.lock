@@ -652,8 +652,9 @@ dependencies = [
 
 [[package]]
 name = "onenote_parser"
-version = "1.1.1"
-source = "git+https://github.com/msiemens/onenote.rs?branch=master#5138a39a3f4e72b840932f9872fecde52fa9da60"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9850dc986316a0f729457917284a8e63ff06a359be2ba1ce051239d37e1c978"
 dependencies = [
  "bytes",
  "cab",
@@ -674,8 +675,9 @@ dependencies = [
 
 [[package]]
 name = "onenote_parser-macros"
-version = "1.1.1"
-source = "git+https://github.com/msiemens/onenote.rs?branch=master#5138a39a3f4e72b840932f9872fecde52fa9da60"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17af8bc18349182a1821dd8451343d04d89464b09587054db4a9c560d3c75037"
 dependencies = [
  "proc-macro2",
  "quote",
