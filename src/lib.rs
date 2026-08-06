@@ -9,6 +9,8 @@ mod notebook;
 mod page;
 mod section;
 mod templates;
+#[cfg(test)]
+mod test_utils;
 mod utils;
 
 /// Conversion options.

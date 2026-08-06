@@ -15,7 +15,11 @@ impl<'a, FS: FileSystem> Renderer<'a, FS> {
             // Read enough of a prefix that `determine_image_filename` can run
             // file-type detection without materialising the whole image.
             let image_start_bytes = read_file_start(&mut reader)?;
-            let filename = self.determine_image_filename(image, &image_start_bytes)?;
+            let filename = self.determine_image_filename(
+                image.image_filename(),
+                image.extension(),
+                &image_start_bytes,
+            )?;
 
             let target_file = self.output.join(filename.clone());
 
@@ -64,8 +68,13 @@ impl<'a, FS: FileSystem> Renderer<'a, FS> {
         Ok(self.render_with_note_tags(image.note_tags(), content))
     }
 
-    fn determine_image_filename(&mut self, image: &Image, initial_bytes: &[u8]) -> Result<String> {
-        if let Some(name) = image.image_filename() {
+    fn determine_image_filename(
+        &mut self,
+        image_filename: Option<&str>,
+        extension: Option<&str>,
+        initial_bytes: &[u8],
+    ) -> Result<String> {
+        if let Some(name) = image_filename {
             // Workaround: PDF printout pages are PNG images, but have an image_filename
             // with extension .PDF. Add a PNG extension to these files so that they are
             // imported properly.
@@ -85,7 +94,12 @@ impl<'a, FS: FileSystem> Renderer<'a, FS> {
             return self.determine_filename(&sanitized);
         }
 
-        if let Some(ext) = image.extension() {
+        // The extension is read verbatim out of the OneNote file, so it is fully
+        // attacker controlled and must not reach `output.join()` unsanitized —
+        // separators in it would otherwise escape the output directory. If
+        // nothing survives sanitization, fall through to the extensionless name
+        // rather than failing the whole conversion.
+        if let Some(ext) = extension.and_then(|ext| sanitize_output_filename(ext, self.fs).ok()) {
             let mut i = 0;
 
             loop {
@@ -125,4 +139,122 @@ fn read_file_start(reader: &mut Box<dyn Read>) -> Result<Vec<u8>> {
         .read_to_end(&mut bytes)
         .wrap_err("Failed to read image prefix")?;
     Ok(bytes)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::Options;
+    use crate::page::Renderer;
+    use crate::section;
+    use crate::test_utils::StubFs;
+    use typed_path::TypedPathBuf;
+
+    const PNG_HEADER: &[u8] = &[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A];
+
+    fn determine(
+        windows: bool,
+        taken: &[&str],
+        image_filename: Option<&str>,
+        extension: Option<&str>,
+        initial_bytes: &[u8],
+    ) -> String {
+        let fs = StubFs { windows };
+        let mut section = section::Renderer::new();
+        for name in taken {
+            section.files.insert((*name).to_string());
+        }
+        let output = TypedPathBuf::from_unix("/out");
+        let mut renderer = Renderer::new(output, &mut section, Options::default(), fs);
+        renderer
+            .determine_image_filename(image_filename, extension, initial_bytes)
+            .unwrap()
+    }
+
+    fn from_extension(ext: &str) -> String {
+        determine(false, &[], None, Some(ext), &[])
+    }
+
+    #[test]
+    fn extension_is_appended_when_harmless() {
+        assert_eq!(from_extension(".png"), "image0.png");
+    }
+
+    #[test]
+    fn extension_without_leading_dot_is_preserved() {
+        assert_eq!(from_extension("png"), "image0png");
+    }
+
+    #[test]
+    fn extension_collisions_still_increment() {
+        assert_eq!(
+            determine(
+                false,
+                &["image0.png", "image1.png"],
+                None,
+                Some(".png"),
+                &[]
+            ),
+            "image2.png"
+        );
+    }
+
+    // GHSA-86gx-fw5h-h2gp: a crafted PictureFileExtension must not be able to
+    // walk out of the output directory.
+    #[test]
+    fn extension_cannot_traverse_with_unix_separators() {
+        let name = from_extension("../../../pwned.txt");
+        assert!(!name.contains('/'), "{name} still contains a separator");
+        assert!(!name.contains(".."), "{name} still contains a traversal");
+    }
+
+    #[test]
+    fn extension_cannot_traverse_with_windows_separators() {
+        let name = determine(true, &[], None, Some(r"..\..\pwned.txt"), &[]);
+        assert!(!name.contains('\\'), "{name} still contains a separator");
+        assert!(!name.contains(".."), "{name} still contains a traversal");
+    }
+
+    #[test]
+    fn extension_that_sanitizes_to_nothing_falls_back_to_no_extension() {
+        // Must not abort the conversion: malformed input should degrade, not fail.
+        assert_eq!(from_extension(".."), "image0");
+        assert_eq!(from_extension("/"), "image0");
+        assert_eq!(from_extension(""), "image0");
+    }
+
+    #[test]
+    fn missing_extension_falls_back_to_no_extension() {
+        assert_eq!(determine(false, &[], None, None, &[]), "image0");
+        assert_eq!(determine(false, &["image0"], None, None, &[]), "image1");
+    }
+
+    #[test]
+    fn image_filename_cannot_traverse() {
+        let name = determine(false, &[], Some("../../pwned.txt"), None, &[]);
+        assert_eq!(name, "pwned.txt");
+    }
+
+    #[test]
+    fn image_filename_takes_precedence_over_extension() {
+        assert_eq!(
+            determine(false, &[], Some("photo.jpg"), Some(".png"), &[]),
+            "photo.jpg"
+        );
+    }
+
+    #[test]
+    fn pdf_printout_with_png_payload_gains_png_extension() {
+        assert_eq!(
+            determine(false, &[], Some("printout.PDF"), None, PNG_HEADER),
+            "printout.PDF.png"
+        );
+    }
+
+    #[test]
+    fn pdf_without_png_payload_keeps_its_extension() {
+        assert_eq!(
+            determine(false, &[], Some("printout.PDF"), None, b"%PDF-1.7"),
+            "printout.PDF"
+        );
+    }
 }

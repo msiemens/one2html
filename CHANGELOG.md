@@ -58,6 +58,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Prevent path traversal when writing images whose OneNote file extension
+  contains path separators — the remaining unsanitized sibling of the
+  CVE-2026-22810 embedded-file fix
+  ([GHSA-86gx-fw5h-h2gp](https://github.com/msiemens/one2html/security/advisories/GHSA-86gx-fw5h-h2gp)).
 - HTML-escape user-controllable strings — page titles, text runs, hyperlink
   URLs, and `style`/`href`/`src` attribute values — to prevent HTML/script
   injection from untrusted OneNote files.
