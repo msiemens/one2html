@@ -10,7 +10,7 @@ use std::process::exit;
 use typed_path::NativePath;
 
 #[derive(Parser, Debug)]
-#[command(name = "one2html")]
+#[command(name = "one2html", version)]
 pub(crate) struct Opt {
     /// Input files (`.one`, `.onetoc2`, or `.onepkg` files)
     #[arg(short, long, required = true, value_name = "FILE", num_args = 1..)]
