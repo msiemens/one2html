@@ -18,16 +18,20 @@ cargo binstall one2html
 3. Build from source:
 
 ```sh
-cargo install --locked --no-default-features one2html
+cargo install --locked --no-default-features --features bin,onepkg one2html
 ```
 
 All options require the latest stable [Rust][rust] compiler.
 
-If you are using [a nightly compiler][rust-nightly], you can omit the
-`--no-default-features` flag to print stack traces when errors occur during
-OneNote file parsing.
+If you are using [a nightly compiler][rust-nightly], you can use
+`cargo install --locked one2html` instead to print stack traces when errors
+occur during OneNote file parsing.
 
 ## Usage
+
+one2html converts files downloaded from OneDrive as well as files created by
+the OneNote desktop application (2016, 2019, LTSC, …) — for example sections
+from OneNote's local backup folder. The file format is detected automatically.
 
 ### Download OneNote files from OneDrive
 
@@ -73,12 +77,11 @@ To convert a notebook to HTML run:
 one2html -i 'Notebook/Open Notebook.onetoc2' -o ./output_dir/
 ```
 
-## Limitations
+Notebooks exported as `.onepkg` packages can be converted directly as well:
 
-- Due to limitations of the [OneNote parser](https://github.com/msiemens/onenote.rs)
-  only files downloaded from OneDrive are supported. This means you can't
-  convert files created by the OneNote 2016 desktop application using
-  this tool.
+```sh
+one2html -i Notebook.onepkg -o ./output_dir/
+```
 
 ## Disclaimer
 
