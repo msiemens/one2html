@@ -1,5 +1,3 @@
-use core::f32;
-
 use crate::utils::{AttributeSet, StyleSet, html_entities};
 use itertools::Itertools;
 use onenote_parser::contents::{Ink, InkBoundingBox, InkPoint, InkStroke};
