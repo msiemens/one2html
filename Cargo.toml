@@ -1,6 +1,6 @@
 [package]
 name = "one2html"
-version = "2.0.0"
+version = "2.0.1"
 authors = ["Markus Siemens <markus@m-siemens.de>"]
 edition = "2024"
 description = "Convert Microsoft OneNote® notebooks to HTML"
