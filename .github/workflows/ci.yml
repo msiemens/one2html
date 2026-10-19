@@ -24,6 +24,9 @@ jobs:
         include:
           - rust: nightly
             args: '--features backtrace'
+          # What the release workflow ships
+          - rust: stable
+            args: '--no-default-features --features bin,onepkg'
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -42,6 +45,24 @@ jobs:
       - run: cargo clippy ${{ matrix.args }} -- -D warnings
 
       - uses: EmbarkStudios/cargo-deny-action@6c8f9facfa5047ec02d8485b6bf52b587b7777d1 # v2
+
+  platforms:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9 # master
+        with:
+          toolchain: stable
+
+      - run: cargo build --no-default-features --features bin,onepkg
+
+      - run: cargo test --no-default-features --features bin,onepkg
 
   wasm:
     name: WASM build
