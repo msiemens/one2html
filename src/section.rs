@@ -35,7 +35,7 @@ impl Renderer {
 
         for page_series in section.page_series() {
             for page in page_series.pages() {
-                let title = page.title_text().map(|s| s.to_string()).unwrap_or_else(|| {
+                let title = page.title_text().map(|s| s.to_string()).filter(|s| !s.trim().is_empty()).unwrap_or_else(|| {
                     fallback_title_index += 1;
 
                     format!("Untitled Page {}", fallback_title_index)
