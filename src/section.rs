@@ -35,11 +35,15 @@ impl Renderer {
 
         for page_series in section.page_series() {
             for page in page_series.pages() {
-                let title = page.title_text().map(|s| s.to_string()).unwrap_or_else(|| {
-                    fallback_title_index += 1;
+                let title = page
+                    .title_text()
+                    .map(|s| s.to_string())
+                    .filter(|s| !s.trim().is_empty())
+                    .unwrap_or_else(|| {
+                        fallback_title_index += 1;
 
-                    format!("Untitled Page {}", fallback_title_index)
-                });
+                        format!("Untitled Page {}", fallback_title_index)
+                    });
 
                 let file_name = title.trim().replace("/", "_");
                 let file_name = self.determine_page_filename(&file_name, fs)?;
